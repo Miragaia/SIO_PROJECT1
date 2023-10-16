@@ -1,29 +1,39 @@
-from flask import Flask, render_template
+from flask import Flask, flash, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates/')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Use your database URI
 db = SQLAlchemy(app)
 
 ################################################### LOAD PAGES ###################################################################
-@app.route('/')
 
-def returnHTML():
-    return render_template('reg_log.html')      # o flask para detetar as paginas html precisa de ser corrido da root do projeto
-                                                # (fora de qqr pasta) e os html têm que estar numa pasta chamada 'templates'
+@app.route('/register', methods = ['GET', 'POST'])
+
+def register():
+   if request.method == 'POST':
+      if not request.form['name'] or not request.form['email'] or not request.form['password']:
+         flash('Please enter all the fields', 'error')
+      else:
+         user = User(request.form['name'], request.form['email'], request.form['password'],'normal')
+         
+         db.session.add(user)
+         db.session.commit()
+         
+         flash('Record was successfully added')
+   return render_template('register.html')
 
 ###################################################### SQL #######################################################################
+db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(255), nullable=False)
-    last_name = db.Column(db.String(255), nullable=False)
+    #last_name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     type = db.Column(db.Enum('normal', 'admin'), nullable=False)
-    city = db.Column(db.String(255))
-    country = db.Column(db.String(255))
 
+'''
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
@@ -87,6 +97,7 @@ class Favorite(db.Model):
     product_id = db.Column(db.Integer, nullable=False)
     user = db.relationship('User', foreign_keys=[user_id])
     product = db.relationship('Product', foreign_keys=[product_id])
-
+'''
+    
 db.create_all()
 app.run()

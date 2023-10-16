@@ -223,23 +223,24 @@
 		<div class="container">
             <div class="screen">
                 <div class="screen__content">
-                    <form class="login">
+                    <form class="login" method="POST">
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
-                            <input type="text" class="login__input" placeholder="Full Name">
+                            <input type="text" name="name" class="login__input" placeholder="Full Name">
                         </div>
                         <div class="login__field">
                             <i class="login__icon fas fa-envelope"></i>
-                            <input type="email" class="login__input" placeholder="Email">
+                            <input type="email" name="email" class="login__input" placeholder="Email">
                         </div>
                         <div class="login__field">
                             <i class="login__icon fas fa-lock"></i>
-                            <input type="password" class="login__input" placeholder="Password">
+                            <input type="password" name="password" class="login__input" placeholder="Password">
                         </div>
                         <button class="button register__submit">
                             <a style="text-decoration: none;" href="index.html">
                                 <span class="button__text">Register Now</span>
                                 <i class="button__icon fas fa-chevron-right"></i>
+								<input type = "submit" value = "Submit" />
                             </a>
                         </button>
                         <button class="button register__submit">
