@@ -223,7 +223,7 @@
 		<div class="container">
             <div class="screen">
                 <div class="screen__content">
-                    <form class="login" method="POST">
+                    <form class="login" method="POST" action="http://127.0.0.1:5000/register">
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
                             <input type="text" name="name" class="login__input" placeholder="Full Name">
@@ -236,11 +236,14 @@
                             <i class="login__icon fas fa-lock"></i>
                             <input type="password" name="password" class="login__input" placeholder="Password">
                         </div>
-                        <button class="button register__submit">
-                            <a style="text-decoration: none;" href="index.html">
+						<div class="login__field">
+							<i class="login__icon fas fa-lock"></i>
+							<input type="password" name="confirm_password" class="login__input" placeholder="Confirm Password">
+						</div>
+                        <button class="button register__submit" type="submit">
+                            <a style="text-decoration: none;">
                                 <span class="button__text">Register Now</span>
                                 <i class="button__icon fas fa-chevron-right"></i>
-								<input type = "submit" value = "Submit" />
                             </a>
                         </button>
                         <button class="button register__submit">
