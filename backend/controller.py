@@ -8,7 +8,6 @@ db = SQLAlchemy(app)
 ################################################### LOAD PAGES ###################################################################
 
 @app.route('/register', methods = ['GET', 'POST'])
-
 def register():
    if request.method == 'POST':
       if not request.form['name'] or not request.form['email'] or not request.form['password']:
@@ -22,6 +21,12 @@ def register():
          flash('Record was successfully added')
    return render_template('register.html')
 
+@app.route('/products', methods = ['GET'])
+def products():
+    products = Product.query.all()  
+    return render_template('shop.html', products=products)
+
+
 ###################################################### SQL #######################################################################
 db = SQLAlchemy(app)
 
@@ -33,17 +38,18 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     type = db.Column(db.Enum('normal', 'admin'), nullable=False)
 
-'''
+
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text)
+    #description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2), nullable=False)
-    discount = db.Column(db.Numeric(5, 2))
+    #discount = db.Column(db.Numeric(5, 2))
     stock = db.Column(db.Integer, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     photo = db.Column(db.String(255))
 
+'''
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
