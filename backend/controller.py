@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='../templates/')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Use your database URI
-db = SQLAlchemy(app)
+db = SQLAlchemy(app)  # Create a single instance of SQLAlchemy
+
 
 ################################################### LOAD PAGES ###################################################################
 
@@ -28,7 +29,7 @@ def products():
 
 
 ###################################################### SQL #######################################################################
-db = SQLAlchemy(app)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -104,6 +105,8 @@ class Favorite(db.Model):
     user = db.relationship('User', foreign_keys=[user_id])
     product = db.relationship('Product', foreign_keys=[product_id])
 '''
-    
-db.create_all()
-app.run()
+
+###################################################### RUN #######################################################################
+if __name__ == '__main__':
+    db.create_all()
+    app.run()
