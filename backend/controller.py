@@ -31,6 +31,36 @@ def register():
 
     return redirect('http://127.0.0.1:5500/templates/reg_log.html')  # Redirecione para a página de login ou qualquer outra página desejada após o registro
 
+@app.route('/reg_log', methods=['GET']) #função p login (nao testada)
+def log():
+
+    email = request.form['email']
+    password = request.form['password']
+    logger = users.query.filter_by(email=email)
+    if not email or not password:
+        flash('Please enter all the fields', 'error')
+    elif password != logger.password:
+        flash('Wrong Password', 'error')
+    elif logger.type == 'admin':
+         return  redirect('http://127.0.0.1:5500/templates/adminpage.html') #falta fazer esta página
+    else: return  redirect('http://127.0.0.1:5500/templates/shop.html')
+
+@app.route('/profile', methods=['POST','GET']) #função p mudar pass (nao testada)
+def changepswd():
+
+    email = request.form['email']
+    old_password = request.form['password']
+    new_password = request.form['new_password']
+    logger = users.query.filter_by(email=email)
+    if not old_password or not new_password:
+        flash('Please enter all the fields', 'error')
+    elif old_password != logger.password:
+        flash('Wrong Password', 'error')
+    else: 
+        logger.password = new_password
+        db.session.commit()
+
+    return render_template('user.html') #falta fazer esta página
 
 
 @app.route('/product')
