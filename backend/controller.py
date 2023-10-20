@@ -1,16 +1,31 @@
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, abort
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from sqlalchemy import text
+
 
 app = Flask(__name__, template_folder='../templates/')
 app.config['SECRET_KEY'] = 'password' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Use your database URI
 db = SQLAlchemy(app)  # Create a single instance of SQLAlchemy
+bcrypt = Bcrypt(app)
 CORS(app)
+login_manager = LoginManager(app)
+login_manager.login_view = "login" 
+
+#********************** PAra app segura **********************
+#from sqlalchemy import text
+
+# Use parâmetros preparados
+#stmt = text("SELECT * FROM users WHERE username = :username")
+#result = db.engine.execute(stmt, username=input_username) desta forma asseguramos que a pesquisa a bd é + segura, pq somos nos a mandar a query
+# *************************************************************
 
 ################################################### LOAD PAGES ###################################################################
 
-@app.route('/register', methods=[ 'POST'])
+@app.route('/register', methods=[ 'POST']) #função p registo (testada)
 def register():
     
     name = request.form['name']
@@ -23,7 +38,8 @@ def register():
     elif password != confirm_password:
         flash('Passwords do not match', 'error')
     else:
-        user = users(first_name=name, email=email, password=password, type='normal')
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = users(first_name=name, email=email, password=hashed_password, type='normal')
         db.session.add(user)
         db.session.commit()
 
@@ -31,21 +47,42 @@ def register():
 
     return redirect('http://127.0.0.1:5500/templates/reg_log.html')  # Redirecione para a página de login ou qualquer outra página desejada após o registro
 
-@app.route('/reg_log', methods=['GET']) #função p login (nao testada)
-def log():
 
+
+@app.route('/reg_log', methods=['POST']) #função p login (nao testada)
+def log():
     email = request.form['email']
     password = request.form['password']
-    logger = users.query.filter_by(email=email)
+    user = users.query.filter_by(email=email).first()
+
     if not email or not password:
         flash('Please enter all the fields', 'error')
-    elif password != logger.password:
+    elif not user:
+        flash('Email not found', 'error')
+    elif not check_password_hash(user.password, password):
         flash('Wrong Password', 'error')
-    elif logger.type == 'admin':
-         return  redirect('http://127.0.0.1:5500/templates/adminpage.html') #falta fazer esta página
-    else: return  redirect('http://127.0.0.1:5500/templates/shop.html')
+    else:
+        login_user(user)  
+        return  redirect('http://127.0.0.1:5500/templates/index.html')
 
-@app.route('/profile', methods=['POST','GET']) #função p mudar pass (nao testada)
+@login_manager.user_loader
+def load_user(user_id):  # Função para carregar o usuário a partir do banco de dados
+    return users.query.get(int(user_id))
+
+
+@app.route('/profile', methods=['POST', 'GET'])
+@login_required
+def profile(): # Apenas usuários autenticados podem acessar esta rota
+    # Você pode acessar os dados do usuário atual usando 'current_user'
+    if current_user.type == 'normal':
+        return render_template('http://127.0.0.1:5500/templates/userdashboard.html')
+    elif current_user.type == 'admin':
+        return redirect('http://127.0.0.1:5500/templates/adminpage.html') #falta fazer esta página
+    else:
+        abort(403)  # Acesso negado
+
+
+@app.route('/changepswd', methods=['POST','GET']) #função p mudar pass (nao testada)
 def changepswd():
 
     email = request.form['email']
@@ -62,6 +99,15 @@ def changepswd():
 
     return render_template('user.html') #falta fazer esta página
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('http://127.0.0.1:5500/templates/index.html')
+
+
+
+######### Products #########
 
 @app.route('/product')
 def list_products():
@@ -100,7 +146,7 @@ def add_product():
 ###################################################### SQL #######################################################################
 
 
-class users(db.Model):
+class users(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)

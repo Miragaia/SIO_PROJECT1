@@ -50,7 +50,10 @@
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
+						<li id="Admin"><a class="nav-link" href="admin.html"><img src="../images/user_copy.svg"></a></li>
+						<li id="User"><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
+						<li id="NotAuthenticated"><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
+					
 						<li><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
 					</ul>
 				</div>
@@ -297,7 +300,34 @@
 			</div>
 		</footer>
 		<!-- End Footer Section -->	
+		<script>
+			var isAuthenticated = "{{ current_user.is_authenticated|tojson|safe  }}";
+			var userType = "{{ current_user.type }}";
+			var Admin = document.getElementById('Admin');
+			var User = document.getElementById('User');
+			var NotAuthenticated = document.getElementById('NotAuthenticated');
 
+		
+			if (isAuthenticated) {
+				if (userType === 'admin') {
+					Admin.style.display = 'block';
+					User.style.display = 'none';
+					NotAuthenticated.style.display = 'none';
+				} else if (userType === 'user') {
+					Admin.style.display = 'none';
+					User.style.display = 'block';
+					NotAuthenticated.style.display = 'none';
+				} else {
+					Admin.style.display = 'none';
+					User.style.display = 'none';
+					NotAuthenticated.style.display = 'block';
+				}
+			} else {
+				Admin.style.display = 'none';
+				User.style.display = 'none';
+				NotAuthenticated.style.display = 'block';
+			}
+		</script>
 		<script src="../js/bootstrap.bundle.min.js"></script>
 		<script src="../js/tiny-slider.js"></script>
 		<script src="../js/custom.js"></script>

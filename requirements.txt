@@ -1,0 +1,7 @@
+flask-sqlalchemy
+flask-cors
+Flask-Bcrypt
+Flask-Login
+werkzeug==0.16.1
+markupsafe==2.0.1
+SQLAlchemy==1.4.23
