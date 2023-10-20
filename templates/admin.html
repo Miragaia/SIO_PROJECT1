@@ -1,0 +1,556 @@
+<!-- /*
+* Bootstrap 5
+* Template Name: Furni
+* Template Author: Untree.co
+* Template URI: https://untree.co/
+* License: https://creativecommons.org/licenses/by/3.0/
+*/ -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="../favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+		<!-- Bootstrap CSS -->
+		<link href="../css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+		<link href="../css/tiny-slider.css" rel="stylesheet">
+		<link href="../css/style.css" rel="stylesheet">
+		<link href="../css/shop.css" rel="stylesheet">
+		<title>DETI - Departamento de Electrónica, Telecomunicações e Informática </title>
+	</head>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+    
+        body {
+            background: #f2f2f2;
+            font-family: 'Open Sans', sans-serif;
+        }
+    
+        .search {
+            width: 100%;
+            position: relative;
+            display: flex;
+            margin-top: 20px;
+        }
+    
+        .searchTerm {
+            width: 50%;
+            border: 3px solid #ffffff;
+            border-right: none;
+            padding: 10px;
+            height: 36px;
+            border-radius: 5px 0 0 5px;
+            border-color: #000000;
+            outline: none;
+            color: #000000;
+        }
+    
+        .searchTerm:focus {
+            color: #585555;
+        }
+    
+        .searchButton {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #000000;
+            background: #000000;
+            text-align: center;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    
+        .wrap {
+            width: 30%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    
+        .filter-section {
+            margin-right: 20px;
+            display: inline-block;
+        }
+    
+        .filter-section label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            margin-top: 30px;
+            font-size: 20px;
+        }
+    
+        .filter-section input,
+        .filter-section select {
+            width: 150px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    
+        #applyFilters {
+            background-color: #000000;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    
+        .range_container {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+    
+        .sliders_control {
+            position: relative;
+            min-height: 10px;
+        }
+    
+        .sliders_control input {
+            left: 30px;
+        }
+    
+        .form_control {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            color: #ffffff;
+            left: 30px;
+        }
+    
+        .form_control_container input {
+            height: 20.6px;
+            background-color: #f5efef;
+            border-radius: 2px;
+        }
+    
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            pointer-events: all;
+            width: 24px;
+            height: 24px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px #C6C6C6;
+            cursor: pointer;
+        }
+    
+        input[type=range]::-moz-range-thumb {
+            -webkit-appearance: none;
+            pointer-events: all;
+            width: 24px;
+            height: 24px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px #C6C6C6;
+            cursor: pointer;
+        }
+    
+        input[type=range]::-webkit-slider-thumb:hover {
+            background: #f7f7f7;
+        }
+    
+        input[type=range]::-webkit-slider-thumb:active {
+            box-shadow: inset 0 0 3px #387bbe, 0 0 9px #387bbe;
+            -webkit-box-shadow: inset 0 0 3px #387bbe, 0 0 9px #387bbe;
+        }
+    
+        input[type="number"] {
+            color: #333131;
+            width: 55px;
+            height: 30px;
+            font-size: 20px;
+            border: none;
+        }
+    
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+    
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 2px;
+            width: 100%;
+            position: absolute;
+            background-color: #C6C6C6;
+            pointer-events: none;
+        }
+    
+        #fromSlider,
+        #fromSlider2 {
+            height: 0;
+            z-index: 1;
+        }
+    
+        /* Additional styles for the inventory management section */
+    
+        h1 {
+            font-size: 24px;
+            margin-top: 30px;
+            margin-left: 30px;
+        }
+    
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+    
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #000;
+            color: #fff;
+        }
+    
+        #add-product-form {
+            margin: 20px 30px;
+        }
+    
+        #add-product-form input,
+        #add-product-form select,
+        #add-product-form button {
+            margin: 10px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    
+        #add-product-form button {
+            background-color: #000;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #add-product-form {
+        width: 80%; /* Increase width for centering */
+        margin: 20px auto; /* Center the form horizontally */
+        text-align: center; /* Center the form elements within */
+        }
+
+        #add-product-form input,
+        #add-product-form select,
+        #add-product-form button {
+            margin: 10px;
+            padding: 5px; /* Reduce padding for smaller fields and buttons */
+            width: 80%; /* Reduce width to make elements smaller */
+            max-width: 300px; /* Set a maximum width to prevent elements from stretching too wide */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px; /* Reduce font size for smaller text */
+        }
+
+        .admin {
+            width: 80%; /* Increase width for centering */
+            margin-top: 50px;
+        }
+
+        .manager {
+            margin-top: 50px;
+        }
+    </style>
+    
+	
+
+	<body>
+
+		<!-- Start Header/Navigation -->
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+			<div class="container">
+				<a class="navbar-brand" href="index.html">DETI Store<span>.</span></a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsFurni">
+					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+						<li class="nav-item ">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
+						<li><a class="nav-link" href="about.html">About us</a></li>
+					</ul>
+
+					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+						<li><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
+						<li><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
+					</ul>
+				</div>
+			</div>
+				
+		</nav>
+		<!-- End Header/Navigation -->
+
+        <div class="container admin">
+            <div class="container">
+                <!-- Product List -->
+                <h2>Inventory Management</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Product ID</th>
+                            <th>Availability</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list">
+                        <!-- Product details will be dynamically generated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Product Form -->
+            <div class="container manager">
+                <h2>Add Product</h2>
+                <form id="add-product-form">
+                    <input type="text" id="product-name" placeholder="Product Name" required>
+                    <input type="text" id="product-id" placeholder="Product ID" required>
+                    <select id="availability" required>
+                        <option value="in-stock">In Stock</option>
+                        <option value="out-of-stock">Out of Stock</option>
+                    </select>
+                    <input type="number" id="quantity" placeholder="Quantity" required>
+                    <button type="submit">Add Product</button>
+                </form>
+            </div>
+        </div>
+        
+		<!-- Start Footer Section -->
+		<footer class="footer-section">
+			<div class="container relative">
+
+
+				<div class="row g-5 mb-5">
+					<div class="col-lg-4">
+						<div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">DETI Store<span>.</span></a></div>
+						<p class="mb-4">DETI, or the Department of Electronics, Telecommunications, and Informatics, is a pioneering academic department at our university. Known for its commitment to excellence, DETI offers cutting-edge programs, research opportunities, and a vibrant community where innovation thrives.</p>
+
+						<ul class="list-unstyled custom-social">
+							<li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+							<li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+						</ul>
+					</div>
+
+					<div class="col-lg-8">
+						<div class="row links-wrap">
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">About us</a></li>
+									<li><a href="#">Services</a></li>
+									<li><a href="#">Blog</a></li>
+									<li><a href="#">Contact us</a></li>
+								</ul>
+							</div>
+
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">Support</a></li>
+									<li><a href="#">Knowledge base</a></li>
+									<li><a href="#">Live chat</a></li>
+								</ul>
+							</div>
+
+							<div class="col-6 col-sm-6 col-md-3">
+								<ul class="list-unstyled">
+									<li><a href="#">Jobs</a></li>
+									<li><a href="#">Our team</a></li>
+									<li><a href="#">Leadership</a></li>
+									<li><a href="#">Privacy Policy</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="border-top copyright">
+					<div class="row pt-4">
+						<div class="col-lg-6">
+							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed with love by <a href="https://untree.co">Untree.co</a> Distributed By <a hreff="https://themewagon.com">ThemeWagon</a>  <!-- License information: https://untree.co/license/ -->
+            </p>
+						</div>
+
+						<div class="col-lg-6 text-center text-lg-end">
+							<ul class="list-unstyled d-inline-flex ms-auto">
+								<li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+								<li><a href="#">Privacy Policy</a></li>
+							</ul>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</footer>
+		<!-- End Footer Section -->	
+        <script>
+            // Function to add a new product to the list
+            function addProduct() {
+                const productName = document.getElementById('product-name').value;
+                const productId = document.getElementById('product-id').value;
+                const availability = document.getElementById('availability').value;
+                const quantity = parseInt(document.getElementById('quantity').value);
+        
+                if (availability === 'out-of-stock' && quantity > 0) {
+                    alert('You cannot add a positive quantity for a product marked as "Out of Stock".');
+                    return;
+                }
+        
+                if (quantity < 0) {
+                    alert('Quantity cannot be negative.');
+                    return;
+                }
+                
+                if (availability === 'in-stock' && quantity == 0) {
+                    alert('You cannot add a null quantity for a product marked as "In Stock".');
+                    return;
+                }
+
+                if (isProductExists(productId)) {
+                    alert('Product with the same ID already exists.');
+                    return;
+                }
+
+                // Create a new row in the product list table
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${productName}</td>
+                    <td>${productId}</td>
+                    <td>${availability}</td>
+                    <td>${quantity}</td>
+                    <td><button onclick="editProduct(this)">Edit</button><button onclick="deleteProduct(this)">Delete</button></td>
+                `;
+        
+                document.getElementById('product-list').appendChild(newRow);
+        
+                // Clear the form fields after adding a product
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-id').value = '';
+                document.getElementById('availability').value = 'in-stock';
+                document.getElementById('quantity').value = '';
+            }
+            
+            // Function to check if a product with the given ID already exists in the table
+            function isProductExists(productId) {
+                const productRows = document.querySelectorAll('#product-list tr');
+                for (const row of productRows) {
+                    const idCell = row.querySelector('td:nth-child(2)');
+                    if (idCell && idCell.textContent === productId) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // Function to edit a product
+            function editProduct(button) {
+                const row = button.parentElement.parentElement;
+                const cells = row.querySelectorAll('td');
+                
+                // Check if the row is already in edit mode
+                if (row.getAttribute('data-editing') === 'true') {
+                    // Retrieve the updated values
+                    const updatedProductName = cells[0].querySelector('input').value;
+                    const updatedProductId = cells[1].querySelector('input').value;
+                    const updatedAvailability = cells[2].querySelector('select').value;
+                    let updatedQuantity = parseInt(cells[3].querySelector('input').value, 10);
+
+                    // Validate quantity
+                    if (updatedQuantity < 0) {
+                        updatedQuantity = 0;
+                    }
+
+                    // Update the row with the new values
+                    cells[0].textContent = updatedProductName;
+                    cells[1].textContent = updatedProductId;
+                    cells[2].textContent = updatedAvailability;
+                    cells[3].textContent = updatedQuantity;
+
+                    // Reset the row's editing state
+                    row.removeAttribute('data-editing');
+                    button.textContent = 'Edit';
+                } else {
+                    // Enter edit mode
+                    for (let i = 0; i < 4; i++) {
+                        const cell = cells[i];
+                        const cellValue = cell.textContent;
+                        const inputField = document.createElement('input');
+                        inputField.type = 'text';
+                        inputField.value = cellValue;
+
+                        if (i === 3) {
+                            // For quantity, create a number input field
+                            inputField.type = 'number';
+                            inputField.min = 0;
+                            inputField.value = parseInt(cellValue, 10);
+                        }
+
+                        cell.innerHTML = '';
+                        cell.appendChild(inputField);
+                    }
+
+                    // Add a select dropdown for availability
+                    cells[2].innerHTML = `
+                        <select>
+                            <option value="in-stock">In Stock</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                        </select>
+                    `;
+
+                    // Change the button text to "Save"
+                    button.textContent = 'Save';
+
+                    row.setAttribute('data-editing', 'true');
+                }
+            }
+
+
+        
+            // Function to delete a product
+            function deleteProduct(button) {
+                const row = button.parentElement.parentElement;
+                row.remove();
+                // Implement logic to delete the product
+            }
+        
+            document.getElementById('add-product-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                addProduct();
+            });
+        </script>
+        
+		<script src="../js/bootstrap.bundle.min.js"></script>
+		<script src="../js/tiny-slider.js"></script>
+		<script src="../js/custom.js"></script>
+	</body>
+
+</html>
