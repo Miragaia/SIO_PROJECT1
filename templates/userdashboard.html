@@ -65,7 +65,7 @@
 								<li><a class="dropdown-item" href="/templates/userdashboard.html">Account Details</a></li>
 								<li><a class="dropdown-item" href="/templates/orders.html">Orders</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li id="logout-id"><a class="dropdown-item text-danger" >Logout</a></li>
+								<li id="logout-id-user"><a class="dropdown-item text-danger" >Logout</a></li>
 							</ul>
 						</li>
 						<li id="NotAuthenticated"><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
@@ -317,6 +317,10 @@
 		<script>
 			 const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
+				localStorage.removeItem('token');
+				window.location.href = "/templates/index.html";})
+				const logoutButtonUser = document.getElementById("logout-id-user");
+			logoutButtonUser.addEventListener("click", function() {
 				localStorage.removeItem('token');
 				window.location.href = "/templates/index.html";})
 		function checkToken() {
