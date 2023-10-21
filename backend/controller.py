@@ -237,6 +237,31 @@ def add_product():
 
     return render_template('add_product.html')
 
+@app.route('/update_product', methods=['POST'])
+def update_product():
+    if request.method == 'POST':
+        product_id = request.form.get('product_id')
+        product = products.query.get(product_id)
+
+        product.name = request.form.get('name')
+        product.price = request.form.get('price')
+        product.stock = request.form.get('stock')
+        product.photo = request.form.get('photo')
+
+        db.session.commit()
+        flash('Product updated successfully')
+        
+
+    return jsonify({"success": True})
+
+@app.route('/delete_product/<int:product_id>', methods=['POST'])
+def delete_product(product_id):
+    product = products.query.get(product_id)
+    db.session.delete(product)
+    db.session.commit()
+    flash('Product deleted successfully')
+    return jsonify({"success": True})
+
 ###################################################### SQL #######################################################################
 
 
