@@ -48,21 +48,29 @@
 					</ul>
 		
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li id="Admin"><a class="nav-link" href="admin.html"><img src="../images/user_copy.svg"></a></li>
-						<li id="User"><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
-						<!-- Dropdown for NotAuthenticated User -->
-						<li id="NotAuthenticated" class="nav-item dropdown">
+						<li id="Admin" class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<img src="../images/user.svg">
+								<img src="../images/user_copy.svg">
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="userDropdown">
+								<li><a class="dropdown-item" href="/templates/userdashboard.html">Account Details</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li id="logout-id"><a class="dropdown-item text-danger" >Logout</a></li>
+							</ul>
+						</li>
+						<li id="User" class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="../images/user_copy.svg">
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="userDropdown">
 								<li><a class="dropdown-item" href="/templates/userdashboard.html">Account Details</a></li>
 								<li><a class="dropdown-item" href="/templates/orders.html">Orders</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+								<li id="logout-id"><a class="dropdown-item text-danger" >Logout</a></li>
 							</ul>
 						</li>
-						<li><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
+						<li id="NotAuthenticated"><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
+						<li id="Cart"><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
 					</ul>
 				</div>
 			</div>
@@ -208,6 +216,10 @@
 		</footer>
 		<!-- End Footer Section -->	
 		<script>
+			const logoutButton = document.getElementById("logout-id");
+			logoutButton.addEventListener("click", function() {
+				localStorage.removeItem('token');
+				window.location.href = "/templates/index.html";})
 					 function checkToken() {
 			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
 			var Admin = document.getElementById('Admin');

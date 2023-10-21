@@ -166,6 +166,26 @@
 			cursor: pointer;
 			transition: .2s;
 		}
+		.feedback__message {
+    position: absolute;
+	
+    top: 0;
+	margin-top: 10px;
+    width: 80%;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.success-message {
+    background-color: #4CAF50;
+    color: #ffffff;
+}
+
+.error-message {
+    background-color: #f44336;
+    color: #ffffff;
+}
 
 		.login__submit:active,
 		.login__submit:focus,
@@ -225,6 +245,9 @@
 			<div class="screen">
 				<div class="screen__content">
 					<form class="login" id="login-form">
+						<div class="feedback__message success-message" id="login-success" style="display: none;">Login Successful</div>
+						<div class="feedback__message error-message" id="login-failure" style="display: none;">Login Failed</div>
+						
 						<div class="login__field">
 							<i class="login__icon fas fa-user"></i>
 							<input type="text" name="email" class="login__input" placeholder="Email">
@@ -252,10 +275,7 @@
 							</a>
 						</button>				
 					</form>
-					<div class="feedback">
-						<div class="feedback__message" id="login-success" style="display: none;">Login Successful</div>
-						<div class="feedback__message" id="login-failure" style="display: none;">Login Failed</div>
-					</div>
+					
 				</div>
 				<div class="screen__background">
 					<span class="screen__background__shape screen__background__shape4"></span>
@@ -309,7 +329,7 @@
 							} else {
 								// Login falhou
 								loginFailureMessage.style.display = "block";
-								window.location.href = "/templates/index.html";
+								
 							}
 						})
 						.catch((error) => {

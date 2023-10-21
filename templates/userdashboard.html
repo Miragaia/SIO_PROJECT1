@@ -32,53 +32,44 @@
 
 		<nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
 			<div class="container">
-<<<<<<< HEAD
 				<a class="navbar-brand" href="index.html">DETI Store<span>.</span></a>
-=======
-				<a id="Admin" class="navbar-brand" >DETI Store<span>.</span></a>
-				<a id="User" class="navbar-brand" href="index.html">DETI Store<span>.</span></a>
-
->>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 		
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-<<<<<<< HEAD
-						<li class="nav-item">
-=======
-						<li id="User" class="nav-item ">
->>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
+						<li class="nav-item cart" >
 							<a class="nav-link" href="index.html">Home</a>
 						</li>
-						<li id="Admin"><a class="nav-link" href="shop.html">Shop</a></li>
-						<li id="User"><a class="nav-link" href="shop.html">Shop</a></li>
-						<li id="User" ><a class="nav-link" href="about.html">About us</a></li>
+						<li ><a class="nav-link cart" href="shop.html">Shop</a></li>
+						<li ><a class="nav-link cart" href="about.html">About us</a></li>
 					</ul>
 		
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-<<<<<<< HEAD
-						<li id="Admin"><a class="nav-link" href="admin.html"><img src="../images/user_copy.svg"></a></li>
-						<li id="User"><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
-						<!-- Dropdown for NotAuthenticated User -->
-						<li id="NotAuthenticated" class="nav-item dropdown">
+						<li id="Admin" class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-								<img src="../images/user.svg">
+								<img src="../images/user_copy.svg">
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="userDropdown">
+								<li><a class="dropdown-item" href="/templates/userdashboard.html">Account Details</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li id="logout-id"><a class="dropdown-item text-danger" >Logout</a></li>
+							</ul>
+						</li>
+						<li id="User" class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="../images/user_copy.svg">
 							</a>
 							<ul class="dropdown-menu" aria-labelledby="userDropdown">
 								<li><a class="dropdown-item" href="/templates/userdashboard.html">Account Details</a></li>
 								<li><a class="dropdown-item" href="/templates/orders.html">Orders</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+								<li id="logout-id"><a class="dropdown-item text-danger" >Logout</a></li>
 							</ul>
 						</li>
-						<li><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
-=======
-						<li><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
-					
-						<li id="User"><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
->>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
+						<li id="NotAuthenticated"><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>
+						<li ><a class="nav-link cart" href="cart.html"><img src="../images/cart.svg"></a></li>
 					</ul>
 				</div>
 			</div>
@@ -98,7 +89,7 @@
 			</div>
 		  </div>
 		
-		  <div class="col" id="NotAuthenticated">
+		  <div class="col" >
 			<div class="row">
 			  <div class="col mb-3">
 				<div class="card">
@@ -324,11 +315,17 @@
 		</footer>
 		<!-- End Footer Section -->	
 		<script>
+			 const logoutButton = document.getElementById("logout-id");
+			logoutButton.addEventListener("click", function() {
+				localStorage.removeItem('token');
+				window.location.href = "/templates/index.html";})
 		function checkToken() {
 			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
 			var Admin = document.getElementById('Admin');
             var User = document.getElementById('User');
             var NotAuthenticated = document.getElementById('NotAuthenticated');
+			console.log(NotAuthenticated)
+			var cartElements = document.getElementsByClassName('cart');
 			if (token) {
 				fetch('http://127.0.0.1:5000/user_info', {
 					method: 'GET',
@@ -338,18 +335,20 @@
 				})
 				.then(response => response.json())
 				.then(data => {
-				// Verifique se o usuário está autenticado e recupere o tipo de usuário
-				console.log(data);
+			
 
 				if (data.is_authenticated) {
 					if (data.user_type === 'admin') {
 						Admin.style.display = 'block';
+						for (var i = 0; i < cartElements.length; i++) {
+    cartElements[i].style.display = 'none';
+}
 						User.style.display = 'none';
-						NotAuthenticated.style.display = 'block';
+						NotAuthenticated.style.display = 'none';
 					} else {
 						Admin.style.display = 'none';
 						User.style.display = 'block';
-						NotAuthenticated.style.display = 'block';
+						NotAuthenticated.style.display = 'none';
 					}
 				} else {
 					Admin.style.display = 'none';

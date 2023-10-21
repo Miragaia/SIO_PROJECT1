@@ -45,7 +45,7 @@ def verify_token(token):
         return False
 ################################################### LOAD PAGES ###################################################################
 @app.route('/user_info', methods=['GET'])
-def get_user_info():
+def get_user_info(): #função p saber se user está logado ( testada)
     token = request.headers.get('Authorization')
     
     if not token:
@@ -68,7 +68,7 @@ def get_user_info():
     }
     return jsonify(user_info)
 
-@app.route('/reg_log', methods=['POST']) #função p login (nao testada)
+@app.route('/reg_log', methods=['POST']) #função p login ( testada)
 def log():
     email = request.form['email']
     password = request.form['password']
@@ -111,6 +111,13 @@ def register():
 
     return redirect('http://127.0.0.1:5500/templates/reg_log.html')  # Redirecione para a página de login ou qualquer outra página desejada após o registro
 
+@app.route('/user', methods=['POST','GET']) #função p user (nao testada)
+def user():
+    pass
+
+@app.route('/admin', methods=['POST','GET']) #função p admin (nao testada)
+def admin():
+    pass
 
 
 @app.route('/changepswd', methods=['POST','GET']) #função p mudar pass (nao testada)
