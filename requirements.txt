@@ -2,6 +2,10 @@ flask-sqlalchemy
 flask-cors
 Flask-Bcrypt
 Flask-Login
-werkzeug==0.16.1
-markupsafe==2.0.1
+PyJWT
+werkzeug~=2.2.0
+markupsafe==2.1.1
 SQLAlchemy==1.4.23
+Flask==2.2.0
+jinja2~=3.0.3
+ --upgrade flask_login

@@ -282,10 +282,7 @@
 						<div class="col-lg-7 filter-section">
 							<label for="category" style="color: #ffffff;">Category:</label>
 							<select id="category">
-								<option value="all">All</option>
-								<option value="category1">Category 1</option>
-								<option value="category2">Category 2</option>
-								<!-- Add more categories as needed -->
+								<option value="">Select a category</option>
 							</select>
 							<button id="applyFilters">Apply Filters</button>
 						</div>						
@@ -302,107 +299,6 @@
 			</div>
 		</div>
 
-		<!-- <div class="untree_co-section product-section before-footer-section">
-		    <div class="container">
-		      	<div class="row">
-
-		      		
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="product_details.html">
-							<img src="../images/product-3.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-						</a>
-					</div> 
-						
-					 <div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-1.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-2.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kruzo Aero Chair</h3>
-							<strong class="product-price">$78.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div>
-
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-3.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Ergonomic Chair</h3>
-							<strong class="product-price">$43.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div>
-
-
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-3.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-						
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-1.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-2.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kruzo Aero Chair</h3>
-							<strong class="product-price">$78.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div>
-
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="../images/product-3.png" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Ergonomic Chair</h3>
-							<strong class="product-price">$43.00</strong>
-
-							<span class="icon-cross">
-								<img src="../images/cross.svg" class="img-fluid">
-							</span>
-						</a>
-					</div>
-
-		      	</div>
-		    </div>
-		</div> -->
 
 
 		<!-- Start Footer Section -->
@@ -482,10 +378,11 @@
 			  .then(data => {
 				const productContainer = document.getElementById('product-list');
 				data.products.forEach(product => {
+					console.log(product.id)
 				  const productItem = document.createElement('div');
 				  productItem.className = 'col-12 col-md-4 col-lg-3 mb-5';
 				  productItem.innerHTML = `
-					<a class="product-item" href="product_details" data-product-id="${product.id}">
+					<a class="product-item" data-product-id="${product.id}" data-product-categories="${product.category}">
 					  <img src="${product.photo}" class="img-fluid product-thumbnail">
 					  <h3 class="product-title">${product.name}</h3>
 					  <strong class="product-price">$${product.price}</strong>		
@@ -494,32 +391,78 @@
 				  productContainer.appendChild(productItem);
 				});
 			  });
-			var isAuthenticated = "{{ current_user.is_authenticated|tojson|safe  }}";
-			var userType = "{{ current_user.type }}";
-			var Admin = document.getElementById('Admin');
-			var User = document.getElementById('User');
-			var NotAuthenticated = document.getElementById('NotAuthenticated');
+			  fetch('http://127.0.0.1:5000/category') // Faça a solicitação à rota '/categories'
+				.then(response => response.json())
+				.then(data => {
+					const categorySelect = document.getElementById('category');
+					data.category.forEach(category => {
+						const option = document.createElement('option');
+						option.value = category.id;
+						option.text = category.name;
+						categorySelect.appendChild(option);
+					});
+				});
+			// Adicione um manipulador de eventos de clique ao botão "Aplicar filtros"
+			document.getElementById('applyFilters').addEventListener('click', function() {
+				filter();
+			});
 
-		
-			if (isAuthenticated) {
-				if (userType === 'admin') {
-					Admin.style.display = 'block';
-					User.style.display = 'none';
-					NotAuthenticated.style.display = 'none';
-				} else if (userType === 'user') {
-					Admin.style.display = 'none';
-					User.style.display = 'block';
-					NotAuthenticated.style.display = 'none';
+			//const productCategories = e.target.dataset.productCategories;  para veres as categorias de cada produto
+			
+			// Adicione um manipulador de eventos de clique a cada item de produto
+			document.addEventListener('click', function(e) {
+			const productItem = e.target.closest('.product-item');
+			if (productItem) {
+				const productId = productItem.getAttribute('data-product-id');
+				const productCategories = productItem.getAttribute('data-product-categories');
+				window.location.href = `/templates/product_details.html?id=${productId}`;
+			}
+		});
+
+
+			
+
+			function checkToken() {
+				const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
+				var Admin = document.getElementById('Admin');
+				var User = document.getElementById('User');
+				var NotAuthenticated = document.getElementById('NotAuthenticated');
+				if (token) {
+					fetch('http://127.0.0.1:5000/user_info', {
+						method: 'GET',
+						headers: {
+						'Authorization': token 
+						}
+					})
+					.then(response => response.json())
+					.then(data => {
+					// Verifique se o usuário está autenticado e recupere o tipo de usuário
+					if (data.is_authenticated) {
+						if (data.user_type === 'admin') {
+							Admin.style.display = 'block';
+							User.style.display = 'none';
+							NotAuthenticated.style.display = 'none';
+						} else {
+							Admin.style.display = 'none';
+							User.style.display = 'block';
+							NotAuthenticated.style.display = 'none';
+						}
+					} else {
+						Admin.style.display = 'none';
+						User.style.display = 'none';
+						NotAuthenticated.style.display = 'block';
+					}
+					})
+					.catch(error => {
+					console.error('Erro ao buscar informações do usuário:', error);
+					});
 				} else {
 					Admin.style.display = 'none';
 					User.style.display = 'none';
 					NotAuthenticated.style.display = 'block';
 				}
-			} else {
-				Admin.style.display = 'none';
-				User.style.display = 'none';
-				NotAuthenticated.style.display = 'block';
-			}
+		}
+		checkToken();
 		  </script>
 		<script src="../js/bootstrap.bundle.min.js"></script>
 		<script src="../js/tiny-slider.js"></script>

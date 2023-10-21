@@ -5,6 +5,7 @@
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
 */ -->
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -223,7 +224,7 @@
 		<div class="container">
 			<div class="screen">
 				<div class="screen__content">
-					<form class="login" method="POST" action="http://127.0.0.1:5000/reg_log">
+					<form class="login" id="login-form">
 						<div class="login__field">
 							<i class="login__icon fas fa-user"></i>
 							<input type="text" name="email" class="login__input" placeholder="Email">
@@ -232,7 +233,7 @@
 							<i class="login__icon fas fa-lock"></i>
 							<input type="password" name="password" class="login__input" placeholder="Password">
 						</div>
-						<button class="button login__submit">
+						<button class="button login__submit" id="login-button">
 							<a style="text-decoration: none;">
 								<span class="button__text">Log In Now</span>
 								<i class="button__icon fas fa-chevron-right"></i>
@@ -251,6 +252,10 @@
 							</a>
 						</button>				
 					</form>
+					<div class="feedback">
+						<div class="feedback__message" id="login-success" style="display: none;">Login Successful</div>
+						<div class="feedback__message" id="login-failure" style="display: none;">Login Failed</div>
+					</div>
 				</div>
 				<div class="screen__background">
 					<span class="screen__background__shape screen__background__shape4"></span>
@@ -260,8 +265,60 @@
 				</div>		
 			</div>
 		</div>
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				const loginForm = document.getElementById("login-form");
+				const loginButton = document.getElementById("login-button");
+				const loginSuccessMessage = document.getElementById("login-success");
+				const loginFailureMessage = document.getElementById("login-failure");
+			
+				// Lidar com o envio do formulário de login
+				loginForm.addEventListener("submit", function (e) {
+					e.preventDefault();
+					loginSuccessMessage.style.display = "none";
+					loginFailureMessage.style.display = "none";
+			
+					// Obtenha os valores do formulário
+					const email = loginForm.querySelector('input[name="email"]').value;
+					const password = loginForm.querySelector('input[name="password"]').value;
+			
+					// Faça uma solicitação POST para o servidor Flask (http://127.0.0.1:5000/reg_log)
+					fetch("http://127.0.0.1:5000/reg_log", {
+						method: "POST",
+						body: new URLSearchParams({ email, password }),
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+						},
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (data.isauthenticated) {
+								// Login bem-sucedido
+								loginSuccessMessage.style.display = "block";
+								// Armazene o token JWT no localStorage
+								localStorage.setItem("token", data.token);
+								// Redirecione o usuário para outra página (por exemplo, userdashboard.html)
+								// Redirecione o usuário com base no tipo
+								if (data.user_type === "admin") {
+										// Usuário é um administrador, redirecione para userdashboard.html
+										window.location.href = "/templates/userdashboard.html";
+								} else {
+										// Usuário não é um administrador, redirecione para index.html
+										window.location.href = "/templates/index.html";
+									}							
+							} else {
+								// Login falhou
+								loginFailureMessage.style.display = "block";
+								window.location.href = "/templates/index.html";
+							}
+						})
+						.catch((error) => {
+							console.error("Erro ao fazer login:", error);
+						});
+				});
+			});
+		</script>
 	</body>
-
 </html>
 
 
