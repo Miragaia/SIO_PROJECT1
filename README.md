@@ -15,5 +15,5 @@ python3 controller.py
 ### Paginas feitas com backend funcional e testatdo:
 
 - [x] Register
-- [ ] Login
-- [ ] Shop
+- [x] Login
+- [x] List Products

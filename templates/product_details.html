@@ -147,15 +147,13 @@
 <div class="product-details">
   <div class="container">
     <div class="row produto">
-      <div class="col-md-6">
-        <img src="../images/emblema_lei.png" alt="Product Image" class="img-fluid product-image">
+      <div class="col-md-6" id="imagem_produto">
+        
       </div>
-      <div class="col-md-6">
-        <h2 class="product-title">Emblema LEI</h2>
-        <p class="product-description">O emblema da Licenciatura em Engenharia Informática é um símbolo de conquista e excelência no campo da tecnologia e da informática. Este distintivo representa o compromisso com o conhecimento, inovação e resolução de desafios complexos em um mundo digital em constante evolução.</p>
-        <p class="product-price">$100.00</p>
-        <button class="btn btn-primary">Add to Cart</button>
+      <div class="col-md-6" id="product-details-container">
+
       </div>
+     
     </div>
   </div>
 </div>
@@ -194,8 +192,10 @@
           <!-- Lista de Avaliações -->
           <h4 class="review-title">Avaliações dos Clientes</h4>
           <ul class="list-unstyled" id="review-list">
-            <!-- Avaliações serão adicionadas aqui com JavaScript -->
+              <!-- Avaliações serão adicionadas aqui com JavaScript -->
           </ul>
+      </div>
+      
         </div>
       </div>
     </div>
@@ -274,32 +274,106 @@
 </footer>
 <!-- End Footer Section -->	
 <script>
-  var isAuthenticated = "{{ current_user.is_authenticated|tojson|safe  }}";
-  var userType = "{{ current_user.type }}";
-  var Admin = document.getElementById('Admin');
-  var User = document.getElementById('User');
-  var NotAuthenticated = document.getElementById('NotAuthenticated');
+    const reviewsContainer = document.getElementById('review-list');
+    function renderStars(rating) {
+    const starCount = 5; // Número total de estrelas
+    const filledStars =rating;
+    const emptyStars = starCount - filledStars;
+    let starsHtml = '';
 
-
-  if (isAuthenticated) {
-    if (userType === 'admin') {
-      Admin.style.display = 'block';
-      User.style.display = 'none';
-      NotAuthenticated.style.display = 'none';
-    } else if (userType === 'user') {
-      Admin.style.display = 'none';
-      User.style.display = 'block';
-      NotAuthenticated.style.display = 'none';
-    } else {
-      Admin.style.display = 'none';
-      User.style.display = 'none';
-      NotAuthenticated.style.display = 'block';
+    for (let i = 0; i < filledStars; i++) {
+        starsHtml += '<span class="star filled">&#9733;</span>';
     }
-  } else {
-    Admin.style.display = 'none';
-    User.style.display = 'none';
-    NotAuthenticated.style.display = 'block';
-  }
+
+    return starsHtml;
+}
+  // Função para buscar os detalhes de um produto com base no ID
+    function fetchProductDetails(productId) {
+        fetch(`http://127.0.0.1:5000/product/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+              const  ImageDetailsContainer= document.getElementById('imagem_produto'); 
+            ImageDetailsContainer.innerHTML = `<img src="${data.photo}" alt="Product Image" class="img-fluid product-image">`
+              const productDetailsContainer = document.getElementById('product-details-container');
+            productDetailsContainer.innerHTML = `
+                    <h2 class="product-title">${data.name}</h2>
+                    <p class="product-description">${data.description}</p>
+                    <p class="product-price">Estoque: ${data.stock} unidades</p>
+                    <p class="product-price">Categoria: ${data.category_name}</p>
+                    <p class="product-price">Preço: ${data.price}€</p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                `;
+                const reviewsDetailsContainer = document.getElementById('review-list');
+
+              // Adicionar avaliações
+            if (data.reviews.length > 0) {
+                data.reviews.forEach(review => {
+                    const reviewItem = document.createElement('li');
+                    reviewItem.innerHTML = `
+                        <h3>${renderStars(review.rating)}</h3>
+                        <h5>${review.comment}</h5>
+                    `;
+                    reviewsContainer.appendChild(reviewItem);
+                });
+            } else {
+                reviewsContainer.innerHTML = '<p>Ainda não há avaliações para este produto.</p>';
+            }
+        })
+            .catch(error => {
+                console.error('Erro ao obter detalhes do produto:', error);
+            });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    if (productId) {
+        fetchProductDetails(productId);
+    }
+
+
+
+  		 function checkToken() {
+			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
+			var Admin = document.getElementById('Admin');
+            var User = document.getElementById('User');
+            var NotAuthenticated = document.getElementById('NotAuthenticated');
+			if (token) {
+				fetch('http://127.0.0.1:5000/user_info', {
+					method: 'GET',
+					headers: {
+					'Authorization': token 
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+				// Verifique se o usuário está autenticado e recupere o tipo de usuário
+				if (data.is_authenticated) {
+					if (data.user_type === 'admin') {
+						Admin.style.display = 'block';
+						User.style.display = 'none';
+						NotAuthenticated.style.display = 'none';
+					} else {
+						Admin.style.display = 'none';
+						User.style.display = 'block';
+						NotAuthenticated.style.display = 'none';
+					}
+				} else {
+					Admin.style.display = 'none';
+					User.style.display = 'none';
+					NotAuthenticated.style.display = 'block';
+				}
+				})
+				.catch(error => {
+				console.error('Erro ao buscar informações do usuário:', error);
+				});
+			} else {
+				Admin.style.display = 'none';
+                User.style.display = 'none';
+                NotAuthenticated.style.display = 'block';
+			}
+		}
+		checkToken();
 </script>
 </body>
 </html>

@@ -424,32 +424,47 @@
 		<!-- End Footer Section -->	
 
 		<script>
-			var isAuthenticated = "{{ current_user.is_authenticated|tojson|safe  }}";
-			var userType = "{{ current_user.type }}";
+					 function checkToken() {
+			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
 			var Admin = document.getElementById('Admin');
-			var User = document.getElementById('User');
-			var NotAuthenticated = document.getElementById('NotAuthenticated');
-
-		
-			if (isAuthenticated) {
-				if (userType === 'admin') {
-					Admin.style.display = 'block';
-					User.style.display = 'none';
-					NotAuthenticated.style.display = 'none';
-				} else if (userType === 'user') {
-					Admin.style.display = 'none';
-					User.style.display = 'block';
-					NotAuthenticated.style.display = 'none';
+            var User = document.getElementById('User');
+            var NotAuthenticated = document.getElementById('NotAuthenticated');
+			if (token) {
+				fetch('http://127.0.0.1:5000/user_info', {
+					method: 'GET',
+					headers: {
+					'Authorization': token 
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+				// Verifique se o usuário está autenticado e recupere o tipo de usuário
+				if (data.is_authenticated) {
+					if (data.user_type === 'admin') {
+						Admin.style.display = 'block';
+						User.style.display = 'none';
+						NotAuthenticated.style.display = 'none';
+					} else {
+						Admin.style.display = 'none';
+						User.style.display = 'block';
+						NotAuthenticated.style.display = 'none';
+					}
 				} else {
 					Admin.style.display = 'none';
 					User.style.display = 'none';
 					NotAuthenticated.style.display = 'block';
 				}
+				})
+				.catch(error => {
+				console.error('Erro ao buscar informações do usuário:', error);
+				});
 			} else {
 				Admin.style.display = 'none';
-				User.style.display = 'none';
-				NotAuthenticated.style.display = 'block';
+                User.style.display = 'none';
+                NotAuthenticated.style.display = 'block';
 			}
+		}
+		checkToken();
 		</script>
 		<script src="../js/bootstrap.bundle.min.js"></script>
 		<script src="../js/tiny-slider.js"></script>

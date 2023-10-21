@@ -280,21 +280,33 @@
 		<!-- Start Header/Navigation -->
 		<nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
 			<div class="container">
+<<<<<<< HEAD
 				<a class="navbar-brand" href="index.html">DETI Store<span>.</span></a>
+=======
+				<a class="navbar-brand" >DETI Store<span>.</span></a>
+
+>>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 		
 				<div class="collapse navbar-collapse" id="navbarsFurni">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+<<<<<<< HEAD
 						<li class="nav-item">
 							<a class="nav-link" href="index.html">Home</a>
 						</li>
 						<li><a class="nav-link" href="shop.html">Shop</a></li>
 						<li><a class="nav-link" href="about.html">About us</a></li>
+=======
+		
+						<li class="active"><a class="nav-link">Shop</a></li>
+						
+>>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
 					</ul>
 		
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+<<<<<<< HEAD
 						<li id="Admin"><a class="nav-link" href="admin.html"><img src="../images/user_copy.svg"></a></li>
 						<li id="User"><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
 						<!-- Dropdown for NotAuthenticated User -->
@@ -311,6 +323,10 @@
 						</li>
 						<li><a class="nav-link" href="cart.html"><img src="../images/cart.svg"></a></li>
 					</ul>
+=======
+						<li id="User"><a class="nav-link" href="userdashboard.html"><img src="../images/user_copy.svg"></a></li>
+						<li id="NotAuthenticated"><a class="nav-link" href="reg_log.html"><img src="../images/user.svg"></a></li>					</ul>
+>>>>>>> cc64a656adae62c112422c4911ce737087eb0fe9
 				</div>
 			</div>
 		</nav>
@@ -556,6 +572,48 @@
                 e.preventDefault();
                 addProduct();
             });
+
+            function checkToken() {
+			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
+			var Admin = document.getElementById('Admin');
+            var User = document.getElementById('User');
+            var NotAuthenticated = document.getElementById('NotAuthenticated');
+			if (token) {
+				fetch('http://127.0.0.1:5000/user_info', {
+					method: 'GET',
+					headers: {
+					'Authorization': token 
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+				// Verifique se o usuário está autenticado e recupere o tipo de usuário
+				if (data.is_authenticated) {
+					if (data.user_type === 'admin') {
+						Admin.style.display = 'block';
+						User.style.display = 'none';
+						NotAuthenticated.style.display = 'none';
+					} else {
+						Admin.style.display = 'none';
+						User.style.display = 'block';
+						NotAuthenticated.style.display = 'none';
+					}
+				} else {
+					Admin.style.display = 'none';
+					User.style.display = 'none';
+					NotAuthenticated.style.display = 'block';
+				}
+				})
+				.catch(error => {
+				console.error('Erro ao buscar informações do usuário:', error);
+				});
+			} else {
+				Admin.style.display = 'none';
+                User.style.display = 'none';
+                NotAuthenticated.style.display = 'block';
+			}
+		}
+		checkToken();
         </script>
         
 		<script src="../js/bootstrap.bundle.min.js"></script>

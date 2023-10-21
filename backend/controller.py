@@ -2,18 +2,18 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, ses
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from sqlalchemy import text
-
+from sqlalchemy import func, text
+import jwt
+from datetime import datetime, timedelta
 
 app = Flask(__name__, template_folder='../templates/')
+app.config['SESSION_USE_COOKIES'] = True
+CORS(app)  # Use this if your frontend and backend is on different domains
 app.config['SECRET_KEY'] = 'password' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Use your database URI
 db = SQLAlchemy(app)  # Create a single instance of SQLAlchemy
 bcrypt = Bcrypt(app)
-CORS(app)
-login_manager = LoginManager(app)
-login_manager.login_view = "login" 
+
 
 #********************** PAra app segura **********************
 #from sqlalchemy import text
@@ -22,8 +22,72 @@ login_manager.login_view = "login"
 #stmt = text("SELECT * FROM users WHERE username = :username")
 #result = db.engine.execute(stmt, username=input_username) desta forma asseguramos que a pesquisa a bd é + segura, pq somos nos a mandar a query
 # *************************************************************
+############### TOKEN #####################
+def generate_token(user_id, user_type):
+    payload = {
+        'user_id': user_id,
+        'user_type': user_type,
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token expira após 1 hora
+    }
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    return token
 
+# Função para verificar um token JWT
+def verify_token(token):
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        return payload
+    except jwt.ExpiredSignatureError:
+        # Token expirou
+        return False
+    except jwt.InvalidTokenError:
+        # Token inválido
+        return False
 ################################################### LOAD PAGES ###################################################################
+@app.route('/user_info', methods=['GET'])
+def get_user_info():
+    token = request.headers.get('Authorization')
+    
+    if not token:
+        user_info = {
+            'is_authenticated': False
+        }
+        return jsonify(user_info)
+
+    payload = verify_token(token)
+
+    if not payload:
+        user_info = {
+            'is_authenticated': False
+        }
+        return jsonify(user_info)
+
+    user_info = {
+        'is_authenticated': True,
+        'user_type': payload['user_type']
+    }
+    return jsonify(user_info)
+
+@app.route('/reg_log', methods=['POST']) #função p login (nao testada)
+def log():
+    email = request.form['email']
+    password = request.form['password']
+    user = users.query.filter_by(email=email).first()
+
+    if not email or not password:
+        flash('Please enter all the fields', 'error')
+        return jsonify({'isauthenticated': False})
+    elif not user:
+        flash('Email not found', 'error')
+        return jsonify({'isauthenticated': False})
+    elif not check_password_hash(user.password, password):
+        flash('Wrong Password', 'error')
+        return jsonify({'isauthenticated': False})
+
+    else:
+        token = generate_token(user.id, user.type)
+        return jsonify({'token': token, 'isauthenticated': True, 'user_type': user.type})
+        
 
 @app.route('/register', methods=[ 'POST']) #função p registo (testada)
 def register():
@@ -49,39 +113,6 @@ def register():
 
 
 
-@app.route('/reg_log', methods=['POST']) #função p login (nao testada)
-def log():
-    email = request.form['email']
-    password = request.form['password']
-    user = users.query.filter_by(email=email).first()
-
-    if not email or not password:
-        flash('Please enter all the fields', 'error')
-    elif not user:
-        flash('Email not found', 'error')
-    elif not check_password_hash(user.password, password):
-        flash('Wrong Password', 'error')
-    else:
-        login_user(user)  
-        return  redirect('http://127.0.0.1:5500/templates/index.html')
-
-@login_manager.user_loader
-def load_user(user_id):  # Função para carregar o usuário a partir do banco de dados
-    return users.query.get(int(user_id))
-
-
-@app.route('/profile', methods=['POST', 'GET'])
-@login_required
-def profile(): # Apenas usuários autenticados podem acessar esta rota
-    # Você pode acessar os dados do usuário atual usando 'current_user'
-    if current_user.type == 'normal':
-        return render_template('http://127.0.0.1:5500/templates/userdashboard.html')
-    elif current_user.type == 'admin':
-        return redirect('http://127.0.0.1:5500/templates/adminpage.html') #falta fazer esta página
-    else:
-        abort(403)  # Acesso negado
-
-
 @app.route('/changepswd', methods=['POST','GET']) #função p mudar pass (nao testada)
 def changepswd():
 
@@ -99,19 +130,73 @@ def changepswd():
 
     return render_template('user.html') #falta fazer esta página
 
-@app.route('/logout')
-@login_required
+@app.route('/logout', methods=['POST']) #função p logout (nao testada)
 def logout():
-    logout_user()
-    return redirect('http://127.0.0.1:5500/templates/index.html')
-
+    pass
 
 
 ######### Products #########
+@app.route('/product/<int:product_id>')
+def get_product(product_id):
+    product = products.query.get(product_id)
+    # lista de todas as reviews do produto
+    reviews = product_comments.query.filter_by(product_id=product_id).all()
+    print(reviews)
+    category = categories.query.get(product.category_id)
+
+    product_data = {
+        'id': product.id,
+        'name': product.name,
+        'description': product.description,
+        'price': str(product.price),
+        'stock': product.stock,
+        'category_id': category.id,
+        'category_name': category.name,
+        'photo': product.photo,
+        'reviews': []
+    }
+
+    for r in reviews:
+        user = users.query.get(r.user_id)
+        product_data['reviews'].append({
+            'user_id': user.id,
+            'user_name': user.first_name,
+            'rating': r.rating,
+            'comment': r.comment,
+            'date': r.date
+        })
+    return jsonify(product_data)
+
+@app.route('/category')
+def list_categories():
+    category = categories.query.all()
+    category_data = []
+    for c in category:
+        category_data.append({
+            'id': c.id,
+            'name': c.name
+        })
+    return jsonify(category=category_data)
 
 @app.route('/product')
 def list_products():
     product = products.query.all()
+    product_data = []
+
+    for p in product:
+        name_categories = categories.query.get(p.category_id)
+        product_data.append({
+            'id': p.id,  # Use o ID para obter detalhes do produto'                                                
+            'name': p.name,
+            'category': name_categories.name,
+            'price': str(p.price),
+            'photo': p.photo
+        })
+    return jsonify(products=product_data)
+
+@app.route('/initial_products')
+def list_initial_products():
+    product = products.query.order_by(func.random()).limit(3).all()
     product_data = []
 
     for p in product:
@@ -121,7 +206,9 @@ def list_products():
             'price': str(p.price),
             'photo': p.photo
         })
+
     return jsonify(products=product_data)
+
 
 
 @app.route('/add_product', methods=['POST'])
@@ -146,7 +233,7 @@ def add_product():
 ###################################################### SQL #######################################################################
 
 
-class users(UserMixin,db.Model):
+class users(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
