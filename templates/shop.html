@@ -268,8 +268,8 @@
 						</div>
 						<div class="col-lg-7">
 							<div class="search">
-								<input type="text" class="searchTerm" placeholder="What are you looking for?">
-								<button type="submit" class="searchButton">
+								<input type="text" class="searchTerm" id="searchTerm" placeholder="What are you looking for?">
+								<button type="submit" class="searchButton" onclick="filter()">
 									<i class="fa fa-search"></i>
 								</button>
 							</div>
@@ -298,7 +298,7 @@
 							<select id="category">
 								<option value="">Select a category</option>
 							</select>
-							<button id="applyFilters">Apply Filters</button>
+							<button id="applyFilters" onclick="filter()">Apply Filters</button>
 						</div>						
 					</div>								
 				</div>
@@ -437,6 +437,41 @@
 			}
 		});
 
+		function filter() {
+			// Get selected category and price range values
+			const selectedCategory = document.getElementById('category').value;
+			const minPrice = parseFloat(document.getElementById('fromInput').value);
+			const maxPrice = parseFloat(document.getElementById('toInput').value);
+			const searchTerm = document.getElementById('searchTerm').value.toLowerCase(); // Convert to lowercase for case-insensitive search
+
+
+			// Get all product items
+			const productItems = document.querySelectorAll('.product-item');
+
+			// Loop through each product item and apply the filter
+			productItems.forEach((productItem) => {
+				const productId = productItem.getAttribute('data-product-id');
+				const productCategories = productItem.getAttribute('data-product-categories');
+				const productPrice = parseFloat(productItem.querySelector('.product-price').textContent.replace('$', ''));
+				const productName = productItem.querySelector('.product-title').textContent.toLowerCase(); // Convert to lowercase for case-insensitive search
+
+				// Check if the selected category matches the product's category
+				const categoryFilter = selectedCategory === '' || productCategories.includes(selectedCategory);
+
+				// Check if the product price is within the selected price range
+				const priceFilter = productPrice >= minPrice && productPrice <= maxPrice;
+
+				// Check if the product name contains the search term
+				const searchFilter = productName.includes(searchTerm);
+
+				// Show the product if it matches the filters; hide it otherwise
+				if (categoryFilter && priceFilter && searchFilter) {
+				productItem.style.display = 'block';
+				} else {
+				productItem.style.display = 'none';
+				}
+			});
+		}
 
 			
 
