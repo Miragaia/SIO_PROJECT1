@@ -197,7 +197,9 @@ def list_products():
             'name': p.name,
             'category': name_categories.name,
             'price': str(p.price),
-            'photo': p.photo
+            'photo': p.photo,
+            'stock': p.stock,
+            'description': p.description         
         })
     return jsonify(products=product_data)
 
@@ -225,36 +227,63 @@ def add_product():
         price = request.form.get('price')
         stock = request.form.get('stock')
         photo = request.form.get('photo')
+        categories_id = request.form.get('categories_id')
+        description = request.form.get('description')
 
-        # Crie um novo produto
-        product1 = products(name=name, price=price, stock=stock, photo=photo)
-
+        if not name or not price or not stock or not description:
+            flash('Please enter all the fields', 'error')
+            return jsonify({"success": False})
+        
+        # Crie um novo produto (caso nao tenha nada cai com null)
+        if not photo:
+            photo = ""
+        if not categories_id:
+            categories_id = None
+        else:
+            #atraves do id da categoria, vamos buscar o nome da categoria
+            categories_name = categories.query.get(categories_id).name
+        product1 = products(name=name, price=price, stock=stock, photo=photo, category_id=categories_id, description=description)
         # Adicione o produto ao banco de dados
         db.session.add(product1)
         db.session.commit()
 
         flash('Product added successfully')
 
-    return render_template('add_product.html')
+    return jsonify({"success": True, "categories_name": categories_name})
 
 @app.route('/update_product', methods=['POST'])
 def update_product():
     if request.method == 'POST':
-        product_id = request.form.get('product_id')
+        product_id = request.json.get('id')  # Obtenha o ID do produto da solicitação JSON
+        updated_product_name = request.json.get('name')
+        updated_product_category = request.json.get('category')
+        updated_quantity = request.json.get('quantity')
+        updated_product_photo = request.json.get('photo')
+        updated_product_description = request.json.get('description')
+        updated_product_price = request.json.get('price')
+
+        # Valide os dados conforme necessário
+        if not updated_product_name or not  updated_quantity  or not updated_product_description or not updated_product_price:
+            flash('Please enter all the fields', 'error')
+            return jsonify({"success": False})
+
+        # Atualize o produto no banco de dados
         product = products.query.get(product_id)
+        if product:
+            product.name = updated_product_name
+            product.category = updated_product_category
+            product.quantity = updated_quantity
+            product.photo = updated_product_photo
+            product.description = updated_product_description
+            product.price = updated_product_price
 
-        product.name = request.form.get('name')
-        product.price = request.form.get('price')
-        product.stock = request.form.get('stock')
-        product.photo = request.form.get('photo')
+            db.session.commit()
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "message": "Product not found"})
 
-        db.session.commit()
-        flash('Product updated successfully')
-        
 
-    return jsonify({"success": True})
-
-@app.route('/delete_product/<int:product_id>', methods=['POST'])
+@app.route('/delete_product/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     product = products.query.get(product_id)
     db.session.delete(product)
