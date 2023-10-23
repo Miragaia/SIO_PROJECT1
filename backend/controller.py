@@ -224,7 +224,7 @@ def list_initial_products():
 def add_product():
     if request.method == 'POST':
         data = request.json  # Access JSON data from the request
-        print(data)
+        
         name = data.get('name')
         price = data.get('price')
         stock = data.get('stock')
@@ -232,7 +232,7 @@ def add_product():
         categories_id = data.get('categories_id')
         description = data.get('description')
 
-        if not name or not price or not stock or not description:
+        if not name or not price or not stock or not description or not categories_id or not photo:
             flash('Please enter all the fields', 'error')
             return jsonify({"success": False})
         
