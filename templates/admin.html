@@ -405,6 +405,20 @@
                 const productDescription = document.getElementById('product-description').value;
                 const productPrice = document.getElementById('product-price').value;
                 
+                console.log(productName);
+                console.log(quantity);
+                console.log(productPhoto);
+                console.log(categoryId);
+                console.log(productDescription);
+                console.log(productPrice);
+                
+
+                if (quantity > 0) {
+                    availability = 'In Stock';
+                } else {
+                    availability = 'Out of Stock';
+                }
+                
                 if (availability === 'out-of-stock' && quantity > 0) {
                     alert('You cannot add a positive quantity for a product marked as "Out of Stock".');
                     return;
@@ -429,22 +443,22 @@
                     body: JSON.stringify({
                         name: productName,
                         price: productPrice,
-                        stock: availability,
+                        stock: quantity,
                         photo: productPhoto,
                         categories_id: categoryId,
                         description: productDescription,
                     }),
-                })
-                .then(response => response.json())
+                })                 
+                .then(response => response.json()) 
                 .then(data => {
+                    console.log(data.success);
                     if (data.success) {
                         // Produto adicionado com sucesso
-                        alert('Product added successfully');
                         if (product.stock > 0 ) {
                         product.available = 'In Stock';
-                    } else {
-                        product.available = 'Out of Stock';
-                    }
+                        } else {
+                            product.available = 'Out of Stock';
+                        }
                     // Create a new row in the product list table
                             const newRow = document.createElement('tr');
                             newRow.innerHTML = `
@@ -471,10 +485,9 @@
                 document.getElementById('product-name').value = ''; 
                 document.getElementById('quantity').value = '';
                 document.getElementById('product-photo').value = '';
-                document.getElementById('product-category').value = '';
+                document.getElementById('category').value = '';
                 document.getElementById('product-description').value = '';
                 document.getElementById('product-price').value = '';
-
             }
             
             // Function to check if a product with the given ID already exists in the table
@@ -574,6 +587,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                
                 // Product updated successfully
                 alert('Product updated successfully');
                         // Reset the row's editing state

@@ -223,12 +223,14 @@ def list_initial_products():
 @app.route('/add_product', methods=['POST'])
 def add_product():
     if request.method == 'POST':
-        name = request.form.get('name')
-        price = request.form.get('price')
-        stock = request.form.get('stock')
-        photo = request.form.get('photo')
-        categories_id = request.form.get('categories_id')
-        description = request.form.get('description')
+        data = request.json  # Access JSON data from the request
+        print(data)
+        name = data.get('name')
+        price = data.get('price')
+        stock = data.get('stock')
+        photo = data.get('photo')
+        categories_id = data.get('categories_id')
+        description = data.get('description')
 
         if not name or not price or not stock or not description:
             flash('Please enter all the fields', 'error')
