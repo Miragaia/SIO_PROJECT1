@@ -12,8 +12,16 @@ pip install -r requirements.txt
 python3 controller.py
 ```
 
-### Paginas feitas com backend funcional e testatdo:
+## Contas de teste:
 
-- [x] Register
-- [x] Login
-- [x] List Products
+### Administrador:
+```
+email: admin@example.com
+senha: password
+```
+
+### Cliente:
+```
+email: abc@example.com
+senha: pass
+```
