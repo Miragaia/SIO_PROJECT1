@@ -310,7 +310,7 @@ def addCart(user_id,product_id):         #quem estiver encarregue disto que comp
 
 
 
-@app.route('/cart', methods =['GET']) 
+@app.route('/cart/<int:user_id>', methods =['GET']) 
 def getCart(user_id):                                       #função usada para carregar todos os items no carrinho
     cart = cart.query.filter_by(user_id=user_id).all()      #ainda falta descobrir como obter user_id do user loggado
     cart_list = []
@@ -326,6 +326,23 @@ def getCart(user_id):                                       #função usada para
             cart_list.append(product_info)
 
     return jsonify({'products': cart_list})
+
+
+@app.route('/cartremove/<int:item_id>', methods =['DELETE'])
+def remove(item_id):
+    try:
+        toRemove = cart.query.filter_by(id=item_id).first()
+
+        if toRemove:
+            db.session.delete(toRemove)
+            db.session.commit()
+            return jsonify({'message': 'Item removed from the cart successfully.'}), 200
+        else:
+            return jsonify({'error': 'Item not found in the cart.'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 
 @app.route('/checkout', methods=['POST', 'DELETE']) 
