@@ -86,7 +86,7 @@ def log():
 
     else:
         token = generate_token(user.id, user.type)
-        return jsonify({'token': token, 'isauthenticated': True, 'user_type': user.type})
+        return jsonify({'token': token, 'isauthenticated': True, 'user_type': user.type, 'user_id': user.id})
         
 
 @app.route('/register', methods=[ 'POST']) #função p registo (testada)

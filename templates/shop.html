@@ -390,6 +390,8 @@
 			const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
 			fetch('http://127.0.0.1:5000/product') // Ajuste o URL de acordo com o servidor Flask
 			  .then(response => response.json())

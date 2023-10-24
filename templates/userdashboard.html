@@ -319,10 +319,14 @@
 			 const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
 				const logoutButtonUser = document.getElementById("logout-id-user");
 			logoutButtonUser.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
 		function checkToken() {
 			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage

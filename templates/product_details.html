@@ -285,6 +285,8 @@
   const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
 				localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
     const reviewsContainer = document.getElementById('review-list');
     function renderStars(rating) {

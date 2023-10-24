@@ -355,6 +355,8 @@
             const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
 				localStorage.removeItem('token');
+                localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
             fetch('http://127.0.0.1:5000/category') // Faça a solicitação à rota '/categories'
 				.then(response => response.json())
