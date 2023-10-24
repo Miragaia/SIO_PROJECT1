@@ -113,12 +113,17 @@ def register():
 
 @app.route('/user', methods=['POST','GET']) #função p user (nao testada)
 def user():
-    pass
-
-@app.route('/admin', methods=['POST','GET']) #função p admin (nao testada)
-def admin():
-    pass
-
+    #listar os dados do user atraves do id recebido
+    user_id = request.form['id']
+    user = users.query.get(user_id)
+    user_data = {
+        'id': user.id,
+        'name': user.first_name,
+        'email': user.email,
+        'type': user.type, # palacra passe desincriptada
+        'password': user.password
+    }
+    return jsonify(user_data)
 
 @app.route('/changepswd', methods=['POST','GET']) #função p mudar pass (nao testada)
 def changepswd():
