@@ -165,9 +165,10 @@ def get_product(product_id):
 
     for r in reviews:
         user = users.query.get(r.user_id)
+        
         product_data['reviews'].append({
-            'user_id': user.id,
-            'user_name': user.first_name,
+            'user_id': 0 if user is None else user.id,
+            'user_name': "Utilizador anónimo" if user is None else user.first_name,
             'rating': r.rating,
             'comment': r.comment,
             'date': r.date
