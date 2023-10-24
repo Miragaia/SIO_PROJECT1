@@ -294,6 +294,61 @@ def delete_product(product_id):
     flash('Product deleted successfully')
     return jsonify({"success": True})
 
+
+@app.route('/idk', methods=['POST'])    #função que é invocada na loja quando se quer adicionar um item ao carrinho
+def addCart(user_id,product_id):         #quem estiver encarregue disto que complete isto pls
+
+    product = products.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found.'}), 404
+    if product.stock <= 0:
+        return jsonify({'error': 'Product out of stock.'}), 400
+
+    cart_item = cart(user_id=user_id, procuct_id=product_id)
+    db.session.add(cart_item)
+    db.session.commit()
+
+
+
+@app.route('/cart', methods =['GET']) 
+def getCart(user_id):                                       #função usada para carregar todos os items no carrinho
+    cart = cart.query.filter_by(user_id=user_id).all()      #ainda falta descobrir como obter user_id do user loggado
+    cart_list = []
+    for item in cart:
+        product = products.query.get(item.product_id)
+        if product:
+            product_info = {
+                'id': product.id,
+                'name': product.name,
+                'price': str(product.price),  
+                'photo': product.photo
+            }
+            cart_list.append(product_info)
+
+    return jsonify({'products': cart_list})
+
+
+@app.route('/checkout', methods=['POST', 'DELETE']) 
+def checkout(user_id):                                                          #esta função deve ser chamada quando se clica no 'PLACE ORDER'
+    cart = cart.query.filter_by(user_id=user_id).all()                          #criar função p verificar se todos os campos foram preenchidos antes de 
+    order = orders(user_id=user_id, order_date ='date', order_status ='idk')    #se fazer a encomenda (adicionar data e status)
+    db.session.add(order) 
+    db.session.commit()  
+
+    this_order = orders.query.filter_by(user_id=user_id).order_by(orders.order_date.desc()).first()
+    order_id = this_order.id 
+
+    for item in cart:       
+        i = order_items(order_id=order_id, product_id=item.id, quantity='1', unit_price=item.price)                                          
+        db.session.add(i)
+        db.session.commit()
+
+    for c in cart: 
+        db.session.delete(c)
+        db.session.commit()
+    
+
+
 ###################################################### SQL #######################################################################
 
 
@@ -310,6 +365,10 @@ class orders(db.Model):
     order_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     order_status = db.Column(db.String(255), nullable=False)
 
+class cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
 
 class products(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
