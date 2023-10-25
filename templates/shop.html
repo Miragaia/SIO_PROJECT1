@@ -406,6 +406,9 @@
 					  <img src="${product.photo}" class="img-fluid product-thumbnail">
 					  <h3 class="product-title">${product.name}</h3>
 					  <strong class="product-price">$${product.price}</strong>		
+					  <span class="icon-cross">
+								<img src=${"../images/cross.svg"} class="img-fluid">
+							</span>
 					</a>
 				  `;
 				  productContainer.appendChild(productItem);
@@ -437,7 +440,7 @@
 				const productCategories = productItem.getAttribute('data-product-categories');
 				window.location.href = `/templates/product_details.html?id=${productId}`;
 			}
-		});
+			});
 
 		function filter() {
 			// Get selected category and price range values
