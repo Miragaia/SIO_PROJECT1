@@ -317,6 +317,7 @@
 								loginSuccessMessage.style.display = "block";
 								// Armazene o token JWT no localStorage
 								localStorage.setItem("token", data.token);
+								localStorage.setItem("user_id", data.user_id);
 								// Redirecione o usuário para outra página (por exemplo, userdashboard.html)
 								// Redirecione o usuário com base no tipo
 								if (data.user_type === "admin") {

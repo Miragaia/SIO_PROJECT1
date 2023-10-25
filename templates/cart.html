@@ -103,55 +103,16 @@
                           <th class="product-thumbnail">Image</th>
                           <th class="product-name">Product</th>
                           <th class="product-price">Price</th>
-                          <th class="product-quantity">Quantity</th>
-                          <th class="product-total">Total</th>
                           <th class="product-remove">Remove</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="cart-items">
                         <tr>
                           <td class="product-thumbnail">
                             <img src="images/product-1.png" alt="Image" class="img-fluid">
                           </td>
                           <td class="product-name">
                             <h2 class="h5 text-black">Product 1</h2>
-                          </td>
-                          <td>$49.00</td>
-                          <td>
-                            <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                              <div class="input-group-prepend">
-                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                              </div>
-                              <input type="text" class="form-control text-center quantity-amount" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                              <div class="input-group-append">
-                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                              </div>
-                            </div>
-        
-                          </td>
-                          <td>$49.00</td>
-                          <td><a href="../#" class="btn btn-black btn-sm">X</a></td>
-                        </tr>
-        
-                        <tr>
-                          <td class="product-thumbnail">
-                            <img src="images/product-2.png" alt="Image" class="img-fluid">
-                          </td>
-                          <td class="product-name">
-                            <h2 class="h5 text-black">Product 2</h2>
-                          </td>
-                          <td>$49.00</td>
-                          <td>
-                            <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                              <div class="input-group-prepend">
-                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                              </div>
-                              <input type="text" class="form-control text-center quantity-amount" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                              <div class="input-group-append">
-                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                              </div>
-                            </div>
-        
                           </td>
                           <td>$49.00</td>
                           <td><a href="../#" class="btn btn-black btn-sm">X</a></td>
@@ -166,10 +127,10 @@
                 <div class="col-md-6">
                   <div class="row mb-5">
                     <div class="col-md-6 mb-3 mb-md-0">
-                      <button class="btn btn-black btn-sm btn-block">Update Cart</button>
+                      <button class="btn btn-black btn-sm btn-block" onClick="window.location.reload();">Update Cart</button>
                     </div>
                     <div class="col-md-6">
-                      <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
+                      <button class="btn btn-outline-black btn-sm btn-block" onclick="window.location='shop.html'">Continue Shopping</button>
                     </div>
                   </div>
                   <div class="row">
@@ -300,6 +261,8 @@
 		const logoutButton = document.getElementById("logout-id");
 			logoutButton.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";})
 					 function checkToken() {
 			const token = localStorage.getItem('token'); // Verifique o token armazenado no localStorage
@@ -343,6 +306,54 @@
 		}
 		checkToken();
 		</script>
+
+		<script>
+			function fetchCartItems() {
+				const userId = localStorage.getItem('user_id');
+				const cartItemsDiv = document.getElementById('cart-items');
+				
+				cartItemsDiv.innerHTML = '';
+
+				fetch(`http://127.0.0.1:5000/cart/${userId}`)           
+					.then(response => response.json())
+					.then(data => {
+						const cartItems = data.products;
+						const cartItemsDiv = document.getElementById('cart-items');
+
+						if (cartItems.length === 0) {
+							cartItemsDiv.innerHTML = '<tr><td colspan="4">Your cart is empty.</td></tr>';
+						} else {
+							cartItems.forEach(item => {
+								const row = document.createElement('tr');
+								row.innerHTML = `
+									<td class="product-thumbnail"><img src="${item.photo}" alt="${item.name}"></td>
+									<td class="product-name">${item.name}</td>
+									<td class="product-price">${item.price}</td>
+									<td class="product-remove"><button onclick="removeFromCart(${item.id})">X</button></td>
+								`;
+								cartItemsDiv.appendChild(row);
+							});
+						}
+					})
+					.catch(error => console.error('Error:', error));
+        }
+		fetchCartItems()
+
+		function removeFromCart(itemId) {
+            fetch(`http://127.0.0.1:5000/cartremove/${itemId}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    //se for removido com sucesso, dar refresh aos dados
+                    fetchCartItems();
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            });
+        }
+		</script>
+
 		<script src="../js/bootstrap.bundle.min.js"></script>
 		<script src="../js/tiny-slider.js"></script>
 		<script src="../js/custom.js"></script>

@@ -437,16 +437,22 @@
 		</footer>
 		<!-- End Footer Section -->	
 		<script>
+			const id = localStorage.getItem('user_id');
+			console.log(id);
+
 			const logoutButtonAdmin = document.getElementById("logout-id-admin");
 			const logoutButtonUser = document.getElementById("logout-id-user");
 
 			logoutButtonAdmin.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
 				window.location.href = "/templates/index.html";
 			});
 
 			logoutButtonUser.addEventListener("click", function() {
 				localStorage.removeItem('token');
+				localStorage.removeItem('user_id');
+
 				window.location.href = "/templates/index.html";
 			});
 
@@ -467,8 +473,7 @@
 				})
 				.then(response => response.json())
 				.then(data => {
-				// Verifique se o usuário está autenticado e recupere o tipo de usuário
-				console.log(data);
+				
 
 				if (data.is_authenticated) {
 					if (data.user_type === 'admin') {
