@@ -306,6 +306,12 @@ def update_product():
         updated_product_description = request.json.get('description')
         updated_product_price = request.json.get('price')
 
+        print("",updated_product_name)
+        print(updated_product_category)
+        print(updated_quantity)
+        print(updated_product_photo)
+
+
         # Valide os dados conforme necessário
         if not updated_product_name or not  updated_quantity  or not updated_product_description or not updated_product_price:
             flash('Please enter all the fields', 'error')
@@ -313,15 +319,17 @@ def update_product():
 
         # Atualize o produto no banco de dados
         product = products.query.get(product_id)
+        print("P1",product.stock)
         if product:
             product.name = updated_product_name
-            product.category = updated_product_category
-            product.quantity = updated_quantity
+            product.category_id = updated_product_category
+            product.stock = updated_quantity
             product.photo = updated_product_photo
             product.description = updated_product_description
             product.price = updated_product_price
 
             db.session.commit()
+            print("P2",product.stock)
             return jsonify({"success": True})
         else:
             return jsonify({"success": False, "message": "Product not found"})
@@ -353,9 +361,9 @@ def addCart(user_id,product_id):         #quem estiver encarregue disto que comp
 
 @app.route('/cart/<int:user_id>', methods =['GET']) 
 def getCart(user_id):                                       #função usada para carregar todos os items no carrinho
-    cart = cart.query.filter_by(user_id=user_id).all()      #ainda falta descobrir como obter user_id do user loggado
+    carts = cart.query.filter_by(user_id=user_id).all()      #ainda falta descobrir como obter user_id do user loggado
     cart_list = []
-    for item in cart:
+    for item in carts:
         product = products.query.get(item.product_id)
         if product:
             product_info = {
@@ -369,10 +377,10 @@ def getCart(user_id):                                       #função usada para
     return jsonify({'products': cart_list})
 
 
-@app.route('/cartremove/<int:item_id>', methods =['DELETE'])
+@app.route('/cart/<int:item_id>', methods =['DELETE'])
 def remove(item_id):
     try:
-        toRemove = cart.query.filter_by(id=item_id).first()
+        toRemove = cart.query.filter_by(product_id=item_id).first()
 
         if toRemove:
             db.session.delete(toRemove)

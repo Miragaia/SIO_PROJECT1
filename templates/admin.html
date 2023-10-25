@@ -559,10 +559,23 @@
             alert('Price cannot be negative.');
         }
 
-        const selectedCategoryId = updatedCategorySelect.value;
+        const categoryMap = {
+					'1': 'Clothes',
+					'2': 'Drinkware',
+					'3': 'Computer Accessories',
+					'4': 'Clothing Accessories',
+					'5': 'Decor',
+					'6': 'Tech Accessories',
+					'7': 'Promotional Items',
+			};
+
+        const selectedCategoryId = updatedProductCategory.value;  //erro aqui
+        const selectedCategoryName = categoryMap[selectedCategoryId];
+        console.log(selectedCategoryId);
         // Update the row with the new values
         cells[1].innerHTML = updatedProductName;
-        cells[4].innerHTML = getCategorySelectHTML(selectedCategoryId);
+        cells[4].innerHTML = selectedCategoryName;
+        console.log(cells[4].innerHTML);
         cells[3].innerHTML = updatedQuantity;
         cells[0].innerHTML = updatedProductPhoto;
         cells[6].innerHTML = updatedProductDescription;
@@ -578,7 +591,7 @@
             body: JSON.stringify({
                 id: cells[2].textContent,
                 name: updatedProductName,
-                category: updatedProductCategory,
+                category: selectedCategoryId,
                 quantity: updatedQuantity,
                 photo: updatedProductPhoto,
                 description: updatedProductDescription,
@@ -606,6 +619,7 @@
         const nameCell = cells[1];
         const name = nameCell.textContent;
         nameCell.innerHTML = `<input type="text" value="${name}">`;
+
 
         getCategorySelectHTML(cells[4].getAttribute('data-category-id'))
             .then(categorySelect => {

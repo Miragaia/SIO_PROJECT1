@@ -319,7 +319,6 @@
 					.then(data => {
 						const cartItems = data.products;
 						const cartItemsDiv = document.getElementById('cart-items');
-
 						if (cartItems.length === 0) {
 							cartItemsDiv.innerHTML = '<tr><td colspan="4">Your cart is empty.</td></tr>';
 						} else {
@@ -340,7 +339,7 @@
 		fetchCartItems()
 
 		function removeFromCart(itemId) {
-            fetch(`http://127.0.0.1:5000/cartremove/${itemId}`, {
+            fetch(`http://127.0.0.1:5000/cart/${itemId}`, {
                 method: 'DELETE',
             })
             .then(response => {
