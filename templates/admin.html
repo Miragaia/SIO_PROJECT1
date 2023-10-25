@@ -557,7 +557,8 @@
             alert('Price cannot be negative.');
         }
 
-        const selectedCategoryId = updatedCategorySelect.value;
+        const selectedCategoryId = updatedProductCategory.value;  //erro aqui
+        console.log(selectedCategoryId);
         // Update the row with the new values
         cells[1].innerHTML = updatedProductName;
         cells[4].innerHTML = getCategorySelectHTML(selectedCategoryId);
