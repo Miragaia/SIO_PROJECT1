@@ -270,6 +270,12 @@ def update_product():
         updated_product_description = request.json.get('description')
         updated_product_price = request.json.get('price')
 
+        print("",updated_product_name)
+        print(updated_product_category)
+        print(updated_quantity)
+        print(updated_product_photo)
+
+
         # Valide os dados conforme necessário
         if not updated_product_name or not  updated_quantity  or not updated_product_description or not updated_product_price:
             flash('Please enter all the fields', 'error')
@@ -277,15 +283,17 @@ def update_product():
 
         # Atualize o produto no banco de dados
         product = products.query.get(product_id)
+        print("P1",product.stock)
         if product:
             product.name = updated_product_name
-            product.category = updated_product_category
-            product.quantity = updated_quantity
+            product.category_id = updated_product_category
+            product.stock = updated_quantity
             product.photo = updated_product_photo
             product.description = updated_product_description
             product.price = updated_product_price
 
             db.session.commit()
+            print("P2",product.stock)
             return jsonify({"success": True})
         else:
             return jsonify({"success": False, "message": "Product not found"})
