@@ -111,40 +111,76 @@ def register():
 
     return redirect('http://127.0.0.1:5500/templates/reg_log.html')  # Redirecione para a página de login ou qualquer outra página desejada após o registro
 
-@app.route('/user', methods=['POST','GET']) #função p user (nao testada)
+@app.route('/user', methods=['POST']) #função p user (nao testada)
 def user():
-    #listar os dados do user atraves do id recebido
-    user_id = request.form['id']
-    user = users.query.get(user_id)
+    data = request.get_json()  # Obtenha os dados JSON do corpo da solicitação
+
+    user_id = data.get('id')  # Obtenha o ID do objeto JSON
+
+    if user_id is None or not user_id.isdigit():
+        return jsonify({'error': 'ID de usuário inválido'}), 400
+
+    user = users.query.get(int(user_id))
+
+    if user is None:
+        return jsonify({'error': 'Usuário não encontrado'}), 401
+
     user_data = {
         'id': user.id,
         'name': user.first_name,
         'email': user.email,
-        'type': user.type, # palacra passe desincriptada
-        'password': user.password
     }
+
     return jsonify(user_data)
 
-@app.route('/changepswd', methods=['POST','GET']) #função p mudar pass (nao testada)
+@app.route('/edit_user', methods=['POST']) #função p user (nao testada)
+def edit_user():
+    data = request.get_json()
+    user_id = data.get('id')
+    name = data.get('name')
+    email = data.get('email')
+
+    if user_id is None or not user_id.isdigit():
+        return jsonify({'error': 'ID de usuário inválido'}), 401
+    
+    user = users.query.get(int(user_id))
+
+    if user is None:
+        return jsonify({'error': 'Usuário não encontrado'}), 404
+    
+    if name is None or email is None:
+        return jsonify({'error': 'Por favor, preencha todos os campos'}), 402
+    
+    user.first_name = name
+    user.email = email
+    db.session.commit()
+
+    return jsonify({'success': True}), 200
+
+@app.route('/changepswd', methods=['POST']) #função p mudar pass (nao testada)
 def changepswd():
+    data = request.get_json()
+    user_id = data.get('id')
+    password = data.get('password')
 
-    email = request.form['email']
-    old_password = request.form['password']
-    new_password = request.form['new_password']
-    logger = users.query.filter_by(email=email)
-    if not old_password or not new_password:
-        flash('Please enter all the fields', 'error')
-    elif old_password != logger.password:
-        flash('Wrong Password', 'error')
-    else: 
-        logger.password = new_password
-        db.session.commit()
+    if user_id is None or not user_id.isdigit():
+        return jsonify({'error': 'ID de usuário inválido'})
+    
+    user = users.query.get(int(user_id))
 
-    return render_template('user.html') #falta fazer esta página
+    if user is None:
+        return jsonify({'error': 'Usuário não encontrado'})
+    
+    if password is None:
+        return jsonify({'error': 'Por favor, preencha todos os campos'})
 
-@app.route('/logout', methods=['POST']) #função p logout (nao testada)
-def logout():
-    pass
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    user.password = hashed_password
+    db.session.commit()
+
+    return jsonify({'success': True}), 200
+
 
 
 ######### Products #########

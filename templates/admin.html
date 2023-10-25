@@ -703,6 +703,7 @@
 					Admin.style.display = 'none';
 					User.style.display = 'none';
 					NotAuthenticated.style.display = 'block';
+                    window.location.href = "/templates/index.html";
 				}
 				})
 				.catch(error => {
@@ -712,6 +713,7 @@
 				Admin.style.display = 'none';
                 User.style.display = 'none';
                 NotAuthenticated.style.display = 'block';
+                window.location.href = "/templates/index.html";
 			}
 		}
 		checkToken();

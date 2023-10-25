@@ -28,6 +28,18 @@
 	body {
 		background-color: #f5f5f5;
 	}
+
+	.clickable-text {
+		cursor: pointer;
+		/* Altera o cursor para indicar que é clicável */
+		text-decoration: underline;
+		/* Adiciona sublinhado */
+	}
+
+	.clickable-text:hover {
+		font-weight: bold;
+		/* Torna o texto em negrito ao passar o mouse */
+	}
 </style>
 
 <body>
@@ -127,7 +139,7 @@
 									</ul>
 									<div class="tab-content pt-3">
 										<div class="tab-pane active">
-											<form class="form" novalidate="">
+											<form class="form" novalidate=""  onsubmit="">
 												<div class="row">
 													<div class="col">
 														<div class="row">
@@ -157,67 +169,87 @@
 															</div>
 														</div>
 														<div class="row">
-															<div class="col mb-3">
+															<div class="col">
 																<div class="form-group">
-																	<label>Adress</label>
-																	<textarea class="form-control" rows="5"
-																		id="address-field"
-																		placeholder="Insert your full address"
-																		disabled></textarea>
+																	
 																</div>
 															</div>
 														</div>
+														
 													</div>
+												</div>
+												<div class="row">
+													<div class="col-12 col-sm-6 mb-3">
+														<!-- Botão "Change Password" formatado como um link clicável -->
+														<div onclick="toggleChangePasswordMode()"
+															class="mb-2 clickable-text"><b><u>Change Password</u></b>
+														</div>
+
+
+
+														<div id="change-password-fields" style="display: none;">
+															<div class="row">
+																<div class="col">
+																	<div class="form-group">
+																	</div>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col">
+																	<div class="form-group">
+																		<label>New Password</label>
+																		<input class="form-control" type="password"
+																			id="new-password-field"
+																			placeholder="Nova Senha">
+																	</div>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col">
+																	<div class="form-group">
+																		<label>Confirm <span
+																				class="d-none d-xl-inline">Password</span></label>
+																		<input class="form-control" type="password"
+																			id="repeat-new-password-field"
+																			placeholder="Repita a Nova Senha">
+																	</div>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col">
+																	<div class="form-group">
+																		
+																	</div>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col">
+																	<div class="form-group">
+																		<button class="btn btn-success"
+																			onclick=cancelPasswordChanges() type="button">Cancelar</button>
+																			<button class="btn btn-secondary"
+																			onclick=savePasswordChanges() type="button">Salvar</button>
+																		
+																		</div>
+																</div>
+															</div>
+														</div>
+														<div class="col-12 col-sm-5 offset-sm-1 mb-3">
+
+														</div>
 													</div>
 													<div class="row">
-														<div class="col-12 col-sm-6 mb-3">
-															<div class="mb-2"><b>Change Password</b></div>
-															<button id="change-password-button" class="btn btn-primary"
-																onclick="enableChangePasswordMode()">Alterar
-																Senha</button>
-															<div id="change-password-fields" style="display: none;">
-																<div class="row">
-																	<div class="col">
-																		<div class="form-group">
-																			<label>Current Password</label>
-																			<input class="form-control" type="password"
-																				id="current-password-field"
-																				placeholder="Senha Atual">
-																		</div>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col">
-																		<div class="form-group">
-																			<label>New Password</label>
-																			<input class="form-control" type="password"
-																				id="new-password-field"
-																				placeholder="Nova Senha">
-																		</div>
-																	</div>
-																</div>
-																<div class="row">
-																	<div class="col">
-																		<div class="form-group">
-																			<label>Confirm <span
-																					class="d-none d-xl-inline">Password</span></label>
-																			<input class="form-control" type="password"
-																				id="repeat-new-password-field"
-																				placeholder="Repita a Nova Senha">
-																		</div>
-																	</div>
-																</div>
-															</div>
-															<div class="col-12 col-sm-5 offset-sm-1 mb-3">
+														<div class="col d-flex justify-content-end">
+															<button id="edit-button" class="btn btn-primary"
+																onclick=enableEditMode() type="button">Editar</button>
+															<button id="cancel-button" class="btn btn-sucess"
+																onclick=cancelEditMode() type="button"
+																style="display: none">Cancelar</button>
+															<button id="confirm-button" class="btn btn-secondary"
+																onclick=confirmEditMode() type="button" style="display: none">Confirmar</button>
 
-															</div>
 														</div>
-														<div class="row">
-															<div class="col d-flex justify-content-end">
-																<button id="edit-button" class="btn btn-primary"
-																	onclick="enableEditMode()">Editar</button>
-															</div>
-														</div>
+													</div>
 											</form>
 
 										</div>
@@ -227,7 +259,7 @@
 						</div>
 					</div>
 
-					
+
 				</div>
 
 			</div>
@@ -316,115 +348,149 @@
 	</footer>
 	<!-- End Footer Section -->
 	<script>
-		function enableChangePasswordMode() {
-			document.getElementById("change-password-button").style.display = "none";
-			document.getElementById("change-password-fields").style.display = "block";
+		const user_id = localStorage.getItem('user_id');
+		const requestData = {
+			id: user_id
+		};
+		function list_dados() {
+			fetch('http://127.0.0.1:5000/user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json' // Especifique o tipo de conteúdo como JSON
+				},
+				body: JSON.stringify(requestData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					document.getElementById('name-field').value = data.name;
+					document.getElementById('email-field').value = data.email;
 
-			// Adicione botão "Cancelar" e "Salvar Alterações"
-			var cancelButton = document.createElement("button");
-			cancelButton.innerHTML = "Cancelar";
-			cancelButton.className = "btn btn-secondary";
-			cancelButton.onclick = cancelChangePassword;
-			var savePasswordButton = document.createElement("button");
-			savePasswordButton.innerHTML = "Salvar Alterações da Senha";
-			savePasswordButton.className = "btn btn-primary";
-			savePasswordButton.onclick = savePasswordChanges;
+				})
+				.catch(error => {
+					console.error('Erro na solicitação:', error);
+				});
+		}
+		// Função para entrar no modo de edição
+		function enableEditMode() {
+			document.getElementById('edit-button').style.display = 'none';
 
-			document.querySelector(".col.d-flex.justify-content-end").appendChild(cancelButton);
-			document.querySelector(".col.d-flex.justify-content-end").appendChild(savePasswordButton);
+			document.getElementById('cancel-button').style.display = 'inline';
+			document.getElementById('confirm-button').style.display = 'inline';
+
+			document.getElementById('name-field').disabled = false;
+			document.getElementById('email-field').disabled = false;
+
+			document.getElementById('new-password-field').disabled = false;
+			document.getElementById('repeat-new-password-field').disabled = false;
+
+			document.getElementById('name-field').focus();
 		}
 
-		function cancelChangePassword() {
-			// Restaure o modo de exibição somente leitura e remova os campos de senha e os botões "Cancelar" e "Salvar Alterações"
-			document.getElementById("change-password-fields").style.display = "none";
-			document.getElementById("current-password-field").value = "";
-			document.getElementById("new-password-field").value = "";
-			document.getElementById("repeat-new-password-field").value = "";
-			document.getElementById("change-password-button").style.display = "block";
+		// Função para sair do modo de edição e cancelar
+		function cancelEditMode() {
+			document.getElementById('edit-button').style.display = 'inline';
+			document.getElementById('cancel-button').style.display = 'none';
+			document.getElementById('confirm-button').style.display = 'none';
 
-			var cancelButton = document.querySelector(".btn.btn-secondary");
-			var savePasswordButton = document.querySelector(".btn.btn-primary");
-			cancelButton.parentNode.removeChild(cancelButton);
-			savePasswordButton.parentNode.removeChild(savePasswordButton);
+
+			document.getElementById('name-field').disabled = true;
+			document.getElementById('email-field').disabled = true;
+
+			document.getElementById('new-password-field').disabled = true;
+			document.getElementById('repeat-new-password-field').disabled = true;
+
+		}
+
+		// Função para confirmar a edição
+		function confirmEditMode() {
+			// Coleta os dados alterados e envie para o servidor
+			const editedData = {
+				id: user_id,
+				name: document.getElementById('name-field').value,
+				email: document.getElementById('email-field').value,
+			};
+			console.log(editedData)
+			fetch('http://127.0.0.1:5000/edit_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json' // Especifique o tipo de conteúdo como JSON
+				},
+				body: JSON.stringify(editedData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						window.location.href = "/templates/userdashboard.html";						
+					} else {
+						alert('Erro ao atualizar dados: ' + data.error);
+					}
+				})
+				.catch(error => {
+					console.error('Erro na solicitação:', error);
+				});
+
+		}
+
+
+
+		// Função para alternar a visibilidade dos campos de mudança de senha
+		function toggleChangePasswordMode() {
+			const changePasswordFields = document.getElementById('change-password-fields');
+
+			if (changePasswordFields.style.display === 'none') {
+				changePasswordFields.style.display = 'block';
+				document.getElementById('edit-button').style.display = 'none';
+
+
+			} else {
+				changePasswordFields.style.display = 'none';
+				document.getElementById('edit-button').style.display = 'inline';
+
+			}
+		}
+		function cancelPasswordChanges() {
+			document.getElementById('new-password-field').value = '';
+			document.getElementById('repeat-new-password-field').value = '';
+
+			toggleChangePasswordMode();
 		}
 
 		function savePasswordChanges() {
-			// Aqui você pode enviar a senha atual e a nova senha para o servidor e salvar as alterações
-			var currentPassword = document.getElementById("current-password-field").value;
-			var newPassword = document.getElementById("new-password-field").value;
-			var repeatNewPassword = document.getElementById("repeat-new-password-field").value;
+			const newPassword = document.getElementById('new-password-field').value;
+			const repeatNewPassword = document.getElementById('repeat-new-password-field').value;
 
-			// Envie os dados para o servidor usando uma solicitação AJAX, por exemplo, para atualizar a senha do usuário.
+			if (newPassword !== repeatNewPassword) {
+				alert('As senhas não coincidem!');
+				return;
+			}
 
-			// Restaure o modo de exibição somente leitura e remova os campos de senha e os botões "Cancelar" e "Salvar Alterações"
-			document.getElementById("change-password-fields").style.display = "none";
-			document.getElementById("current-password-field").value = "";
-			document.getElementById("new-password-field").value = "";
-			document.getElementById("repeat-new-password-field").value = "";
-			document.getElementById("change-password-button").style.display = "block";
+			const editedData = {
+				id: user_id,
+				password: newPassword
+			};
 
-			var cancelButton = document.querySelector(".btn.btn-secondary");
-			var savePasswordButton = document.querySelector(".btn.btn-primary");
-			cancelButton.parentNode.removeChild(cancelButton);
-			savePasswordButton.parentNode.removeChild(savePasswordButton);
-		}
+			fetch('http://127.0.0.1:5000/changepswd', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json' // Especifique o tipo de conteúdo como JSON
+				},
+				body: JSON.stringify(editedData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('Senha alterada com sucesso!');
+						window.location.href = "/templates/userdashboard.html";
+					} else {
+						alert('Erro ao atualizar senha: ' + data.error);
+					}
+				})
+				.catch(error => {
+					console.error('Erro na solicitação:', error);
+				});
 
-		function enableEditMode() {
-			document.getElementById("edit-button").style.display = "none";
-			document.getElementById("name-field").removeAttribute("disabled");
-			document.getElementById("username-field").removeAttribute("disabled");
-			document.getElementById("email-field").removeAttribute("disabled");
-			document.getElementById("address-field").removeAttribute("disabled");
+			}
 
-			// Adicione botão "Cancelar" e "Salvar Alterações"
-			var cancelButton = document.createElement("button");
-			cancelButton.innerHTML = "Cancelar";
-			cancelButton.className = "btn btn-secondary";
-			cancelButton.onclick = cancelEdit;
-			var saveButton = document.createElement("button");
-			saveButton.innerHTML = "Salvar Alterações";
-			saveButton.className = "btn btn-primary";
-			saveButton.onclick = saveChanges;
-
-			document.querySelector(".col.d-flex.justify-content-end").appendChild(cancelButton);
-			document.querySelector(".col.d-flex.justify-content-end").appendChild(saveButton);
-		}
-
-		function cancelEdit() {
-			// Restaure o modo de exibição somente leitura e remova os botões "Cancelar" e "Salvar Alterações"
-			document.getElementById("name-field").setAttribute("disabled", true);
-			document.getElementById("username-field").setAttribute("disabled", true);
-			document.getElementById("email-field").setAttribute("disabled", true);
-			document.getElementById("address-field").setAttribute("disabled", true);
-			document.getElementById("edit-button").style.display = "block";
-
-			var cancelButton = document.querySelector(".btn.btn-secondary");
-			var saveButton = document.querySelector(".btn.btn-primary");
-			cancelButton.parentNode.removeChild(cancelButton);
-			saveButton.parentNode.removeChild(saveButton);
-		}
-
-		function saveChanges() {
-			// Aqui você pode enviar os dados atualizados para o servidor e salvar as alterações
-			var name = document.getElementById("name-field").value;
-			var username = document.getElementById("username-field").value;
-			var email = document.getElementById("email-field").value;
-			var address = document.getElementById("address-field").value;
-
-			// Envie os dados para o servidor usando uma solicitação AJAX, por exemplo, para atualizar as informações do usuário.
-
-			// Restaure o modo de exibição somente leitura e remova os botões "Cancelar" e "Salvar Alterações"
-			document.getElementById("name-field").setAttribute("disabled", true);
-			document.getElementById("username-field").setAttribute("disabled", true);
-			document.getElementById("email-field").setAttribute("disabled", true);
-			document.getElementById("address-field").setAttribute("disabled", true);
-			document.getElementById("edit-button").style.display = "block";
-
-			var cancelButton = document.querySelector(".btn.btn-secondary");
-			var saveButton = document.querySelector(".btn.btn-primary");
-			cancelButton.parentNode.removeChild(cancelButton);
-			saveButton.parentNode.removeChild(saveButton);
-		}
 
 		const logoutButton = document.getElementById("logout-id");
 		logoutButton.addEventListener("click", function () {
@@ -499,6 +565,7 @@
 			}
 		}
 		checkToken();
+		list_dados();
 	</script>
 	<script src="../js/bootstrap.bundle.min.js"></script>
 	<script src="../js/tiny-slider.js"></script>

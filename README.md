@@ -23,5 +23,5 @@ senha: password
 ### Cliente:
 ```
 email: abc@example.com
-senha: pass
+senha: password
 ```
