@@ -234,6 +234,7 @@ def list_products():
 
     for p in product:
         name_categories = categories.query.get(p.category_id)
+        print(name_categories.name)
         product_data.append({
             'id': p.id,  # Use o ID para obter detalhes do produto'                                                
             'name': p.name,
