@@ -103,6 +103,20 @@
     font-size: 18px;
     }
 
+    .star {
+        font-size: 40px; /* Tamanho padrão das estrelas */
+        color: darkgray; /* Cor padrão das estrelas não selecionadas */
+        cursor: pointer;
+    }
+    .star.selected {
+        font-size: 45px; /* Tamanho maior para as estrelas selecionadas */
+        color: #daa520; /* Cor das estrelas selecionadas (amarelo) */
+    }
+    .star.filled {
+        font-size: 20px; /* Tamanho maior para as estrelas selecionadas */
+        color: #daa520; /* Cor das estrelas selecionadas (amarelo) */
+    }
+
 </style>
 <body>
 
@@ -185,27 +199,29 @@
         <div class="col-md-6">
           <!-- Formulário de Avaliação -->
           <h4 class="form-title">Deixe sua avaliação</h4>
-          <form id="review-form">
-            <div class="mb-3">
-              <label for="name">Nome:</label>
-              <input type="text" id="name" name="name" class="form-control" required>
-            </div>
+          <div id="review-form">
+   
             <div class="mb-3">
               <label for="rating">Classificação:</label>
-              <select id="rating" name="rating" class="form-control">
-                <option value="5">5 Estrelas</option>
-                <option value="4">4 Estrelas</option>
-                <option value="3">3 Estrelas</option>
-                <option value="2">2 Estrelas</option>
-                <option value="1">1 Estrela</option>
-              </select>
+              <div id="star-rating-reviewed">
+                <span class="star unselected" data-rating="5">&#9733;</span>
+                <span class="star unselected" data-rating="4">&#9733;</span>
+                <span class="star unselected" data-rating="3">&#9733;</span>
+                <span class="star unselected" data-rating="2">&#9733;</span>
+                <span class="star unselected" data-rating="1">&#9733;</span>
+              </div>
+              <input type="hidden" id="rating" name="rating" value="0" required>
             </div>
+            
+          
+          
+          
             <div class="mb-3">
               <label for="review">Comentário:</label>
               <textarea id="review" name="review" class="form-control" rows="4" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
-          </form>
+            <button type="submit" onclick=sendReview() class="btn btn-success">Enviar Avaliação</button>
+          </div>
         </div>
         <div class="col-md-6">
           <!-- Lista de Avaliações -->
@@ -299,6 +315,7 @@
         localStorage.removeItem('user_id');
 
 				window.location.href = "/templates/index.html";})
+
     const reviewsContainer = document.getElementById('review-list');
     function renderStars(rating) {
     const starCount = 5; // Número total de estrelas
@@ -312,6 +329,72 @@
 
     return starsHtml;
 }
+
+const stars = document.querySelectorAll('.star.unselected');
+const ratingInput = document.getElementById('rating');
+
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    const rating = star.getAttribute('data-rating');
+    ratingInput.value = rating;
+
+    // Remova a classe "selected" de todas as estrelas
+    stars.forEach(s => s.classList.remove('selected'));
+
+    // Adicione a classe "selected" apenas à estrela clicada e todas as estrelas anteriores
+    star.classList.add('selected');
+    let previousStar = star.previousElementSibling;
+    while (previousStar) {
+      previousStar.classList.add('selected');
+      previousStar = previousStar.previousElementSibling;
+    }
+  });
+});
+
+
+   // Função para enviar uma avaliação
+  function sendReview() {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('id');
+      const userId = localStorage.getItem('user_id'); // Substitua pelo ID do usuário que está enviando a avaliação
+      const rating = document.getElementById('rating').value;
+      const comment = document.getElementById('review').value;
+
+      if (!productId || !rating || !comment) {
+          alert('Por favor, preencha todos os campos.');
+          return;
+      }
+
+      const reviewData = {
+          product_id: productId,
+          user_id: userId,
+          rating: rating,
+          comment: comment
+      };
+      
+
+      fetch('http://127.0.0.1:5000/product_review', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(reviewData),
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              alert('Avaliação enviada com sucesso!');             
+              window.location.reload();
+              
+          } else {
+              alert('Erro ao enviar a avaliação: ' + data.error);
+          }
+      })
+      .catch(error => {
+          console.error('Erro na solicitação:', error);
+      });
+  }
+
   // Função para buscar os detalhes de um produto com base no ID
     function fetchProductDetails(productId) {
         fetch(`http://127.0.0.1:5000/product/${productId}`)
@@ -335,12 +418,17 @@
 
               // Adicionar avaliações
             if (data.reviews.length > 0) {
-                data.reviews.forEach(review => {
-                    const reviewItem = document.createElement('li');
-                    reviewItem.innerHTML = `
-                        <h3>${renderStars(review.rating)}</h3>
-                        <h5>${review.comment}</h5>
-                    `;
+              data.reviews.forEach(review => {
+    const reviewItem = document.createElement('li');
+    reviewItem.innerHTML = `
+      <div class="review-header">
+        <h6><strong>${review.user_name}</strong> publicado em ${new Date(review.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</h6>
+        <span>${renderStars(review.rating)}</span>
+      </div>
+      <div class="user-comment">
+        <h7>${review.comment}</h7>
+      </div>
+    `;
                     reviewsContainer.appendChild(reviewItem);
                 });
             } else {

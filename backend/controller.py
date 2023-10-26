@@ -261,13 +261,30 @@ def list_initial_products():
 
     return jsonify(products=product_data)
 
+#Review de produtos
+@app.route('/product_review', methods=['POST'])
+def review_product():
+    data = request.json
+    product_id = data.get('product_id')
+    user_id = data.get('user_id')
+    rating = data.get('rating')
+    comment = data.get('comment')
 
+    if not product_id or not user_id or not rating or not comment:
+        flash('Please enter all the fields', 'error')
+        return jsonify({"success": False, "error": "Please enter all the fields"})
+    
+    review = product_comments(user_id=user_id, product_id=product_id, rating=rating, comment=comment)
+
+    db.session.add(review)
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 @app.route('/add_product', methods=['POST'])
 def add_product():
     if request.method == 'POST':
         data = request.json  # Access JSON data from the request
-        print(data)
         name = data.get('name')
         price = data.get('price')
         stock = data.get('stock')
