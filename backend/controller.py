@@ -234,7 +234,7 @@ def list_products():
 
     for p in product:
         name_categories = categories.query.get(p.category_id)
-        print(name_categories.name)
+        print("id", p.category_id, "category name", name_categories.name)
         product_data.append({
             'id': p.id,  # Use o ID para obter detalhes do produto'                                                
             'name': p.name,
@@ -267,28 +267,24 @@ def list_initial_products():
 def add_product():
     if request.method == 'POST':
         data = request.json  # Access JSON data from the request
-        
+        print(data)
         name = data.get('name')
         price = data.get('price')
         stock = data.get('stock')
         photo = data.get('photo')
-        categories_id = data.get('categories_id')
+        category_id = data.get('categories_id')
+        category_id = int(category_id)
         description = data.get('description')
 
-        if not name or not price or not stock or not description or not categories_id or not photo:
+        if not name or not price or not stock or not description or not category_id or not photo:
             flash('Please enter all the fields', 'error')
             return jsonify({"success": False})
         
-        # Crie um novo produto (caso nao tenha nada cai com null)
-        if not photo:
-            photo = ""
-        if not categories_id:
-            categories_id = None
-        else:
-            #atraves do id da categoria, vamos buscar o nome da categoria
-            categories_name = categories.query.get(categories_id).name
-        product1 = products(name=name, price=price, stock=stock, photo=photo, category_id=categories_id, description=description)
-        # Adicione o produto ao banco de dados
+
+           
+        categories_name = categories.query.get(int(category_id)).name
+        product1 = products(name=name, price=price, stock=stock, photo=photo, category_id=category_id, description=description)
+            # Adicione o produto ao banco de dados
         db.session.add(product1)
         db.session.commit()
 
@@ -320,7 +316,6 @@ def update_product():
 
         # Atualize o produto no banco de dados
         product = products.query.get(product_id)
-        print("P1",product.stock)
         if product:
             product.name = updated_product_name
             product.category_id = updated_product_category
@@ -336,8 +331,9 @@ def update_product():
             return jsonify({"success": False, "message": "Product not found"})
 
 
-@app.route('/delete_product/<int:product_id>', methods=['DELETE'])
-def delete_product(product_id):
+@app.route('/delete_product', methods=['DELETE'])
+def delete_product():
+    product_id = request.json.get('p_id')
     product = products.query.get(product_id)
     db.session.delete(product)
     db.session.commit()
