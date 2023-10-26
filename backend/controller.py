@@ -391,10 +391,10 @@ def getCart(user_id):                                       #função usada para
     return jsonify({'products': cart_list})
 
 
-@app.route('/cart/<int:item_id>', methods =['DELETE'])
-def remove(item_id):
+@app.route('/cart/<int:user_id>/<int:item_id>', methods =['DELETE'])
+def remove(item_id, user_id):
     try:
-        toRemove = cart.query.filter_by(product_id=item_id).first()
+        toRemove = cart.query.filter_by(user_id=user_id, product_id=item_id).first()
 
         if toRemove:
             db.session.delete(toRemove)
