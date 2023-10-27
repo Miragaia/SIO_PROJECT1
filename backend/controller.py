@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__, template_folder='../templates/')
 app.config['SESSION_USE_COOKIES'] = True
-CORS(app)  # Use this if your frontend and backend is on different domains
+CORS(app, origins='*')  # Use this if your frontend and backend is on different domains
 app.config['SECRET_KEY'] = 'password' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # Use your database URI
 db = SQLAlchemy(app)  # Create a single instance of SQLAlchemy
@@ -358,18 +358,19 @@ def delete_product():
     return jsonify({"success": True})
 
 
-@app.route('/idk', methods=['POST'])    #função que é invocada na loja quando se quer adicionar um item ao carrinho
-def addCart(user_id,product_id):         #quem estiver encarregue disto que complete isto pls
-
+@app.route('/product_details/<int:user_id>/<int:product_id>', methods=['POST'])   
+def addCart(user_id, product_id):
     product = products.query.get(product_id)
     if not product:
         return jsonify({'error': 'Product not found.'}), 404
     if product.stock <= 0:
         return jsonify({'error': 'Product out of stock.'}), 400
 
-    cart_item = cart(user_id=user_id, procuct_id=product_id)
+    cart_item = cart(user_id=user_id, product_id=product_id)  
     db.session.add(cart_item)
     db.session.commit()
+
+
 
 
 

@@ -178,7 +178,7 @@
 <div class="product-details">
   <a href="shop.html" class="btn btn-success mt-4 ms-4"><i class="fas fa-arrow-left"></i> Go Back</a>
   
-  <div class="container">
+  <div class="container" >
     <div class="row produto">
       <div class="col-md-6" id="imagem_produto">
         
@@ -397,6 +397,7 @@ stars.forEach(star => {
 
   // Função para buscar os detalhes de um produto com base no ID
     function fetchProductDetails(productId) {
+        const userId = localStorage.getItem('user_id');
         fetch(`http://127.0.0.1:5000/product/${productId}`)
             .then(response => response.json())
             .then(data => {
@@ -410,7 +411,7 @@ stars.forEach(star => {
                     <p class="product-price">Categoria: ${data.category_name}</p>
                     <p class="product-price">Preço: ${data.price}€</p>
                     <span >
-                    <button class="btn btn-secondary mt-4 ">Add to Cart</button>
+                    <button class="btn btn-secondary mt-4" onclick="addToCart(${userId},${productId})">Add to Cart</button>
                     </span>                   
 
                 `;
@@ -447,7 +448,39 @@ stars.forEach(star => {
         fetchProductDetails(productId);
     }
 
+    function addToCart(user_id, product_id) {  //função p adicionar items ao carrinho
 
+        const data = {
+            user_id: user_id,
+            product_id: product_id
+        };
+
+        fetch(`http://127.0.0.1:5000/product_details/${user_id}/${product_id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.status === 200) {
+                // Item was added to the cart successfully
+                console.log('Item added to the cart.');
+            } else if (response.status === 404) {
+                // Product not found
+                console.error('Product not found.');
+            } else if (response.status === 400) {
+                // Product out of stock
+                console.error('Product out of stock.');
+            } else {
+                // Handle other errors here
+                console.error('An error occurred.');
+            }
+        })
+        .catch(error => {
+            console.error('Network error:', error);
+        });
+    }
 
   		 // Função para verificar se um token existe
 		function checkToken() {
