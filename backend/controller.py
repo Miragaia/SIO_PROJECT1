@@ -16,12 +16,17 @@ bcrypt = Bcrypt(app)
 
 
 #********************** PAra app segura **********************
+
+
 #from sqlalchemy import text
 
 # Use parâmetros preparados
-#stmt = text("SELECT * FROM users WHERE username = :username")
-#result = db.engine.execute(stmt, username=input_username) desta forma asseguramos que a pesquisa a bd é + segura, pq somos nos a mandar a query
+# stmt = text("SELECT * FROM users WHERE username = :username")
+# result = db.engine.execute(stmt, username=input_username) desta forma asseguramos que a pesquisa a bd é + segura, pq somos nos a mandar a query
+
 # *************************************************************
+
+
 ############### TOKEN #####################
 def generate_token(user_id, user_type):
     payload = {
@@ -371,9 +376,6 @@ def addCart(user_id, product_id):
     db.session.commit()
 
 
-
-
-
 @app.route('/cart/<int:user_id>', methods =['GET']) 
 def getCart(user_id):                                       #função usada para carregar todos os items no carrinho
     carts = cart.query.filter_by(user_id=user_id).all()      #ainda falta descobrir como obter user_id do user loggado
@@ -391,21 +393,12 @@ def getCart(user_id):                                       #função usada para
 
     return jsonify({'products': cart_list})
 
-
-@app.route('/cart/<int:user_id>/<int:item_id>', methods =['DELETE'])
-def remove(item_id, user_id):
-    try:
-        toRemove = cart.query.filter_by(user_id=user_id, product_id=item_id).first()
-
-        if toRemove:
-            db.session.delete(toRemove)
-            db.session.commit()
-            return jsonify({'message': 'Item removed from the cart successfully.'}), 200
-        else:
-            return jsonify({'error': 'Item not found in the cart.'}), 404
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@app.route('/remove_from_cart/<int:user_id>/<int:product_id>', methods=['DELETE'])
+def remove_from_cart(user_id, product_id):
+    cart_item = cart.query.filter_by(user_id=user_id, product_id=product_id).first()
+    db.session.delete(cart_item)
+    db.session.commit()
+    return jsonify({'success': True})
 
 
 
