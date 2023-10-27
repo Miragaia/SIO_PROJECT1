@@ -421,6 +421,56 @@ def checkout(user_id):                                                          
         db.session.delete(c)
         db.session.commit()
     
+# @app.route('/reviews')
+# def get_product(product_id):
+#     product = products.query.get(product_id)
+#     # lista de todas as reviews do produto
+#     reviews = product_comments.query.filter_by(product_id=product_id).all()
+#     print(reviews)
+#     category = categories.query.get(product.category_id)
+
+#     product_data = {
+#         'id': product.id,
+#         'name': product.name,
+#         'description': product.description,
+#         'price': str(product.price),
+#         'stock': product.stock,
+#         'category_id': category.id,
+#         'category_name': category.name,
+#         'photo': product.photo,
+#         'reviews': []
+#     }
+
+#     for r in reviews:
+#         user = users.query.get(r.user_id)
+        
+#         product_data['reviews'].append({
+#             'user_id': 0 if user is None else user.id,
+#             'user_name': "Utilizador anónimo" if user is None else user.first_name,
+#             'rating': r.rating,
+#             'comment': r.comment,
+#             'date': r.date
+#         })
+#     return jsonify(product_data)
+
+#Review de produtos
+@app.route('/reviews', methods=['POST'])
+def reviews():
+    data = request.json
+    user_id = data.get('user_id')
+    rating = data.get('rating')
+    comment = data.get('comment')
+
+    if not user_id or not rating or not comment:
+        flash('Please enter all the fields', 'error')
+        return jsonify({"success": False, "error": "Please enter all the fields"})
+    
+    review = reviews(user_id=user_id,rating=rating, comment=comment)
+
+    db.session.add(review)
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 
 ###################################################### SQL #######################################################################
@@ -487,7 +537,11 @@ class favorites(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
 
- 
+class reviews(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text)
 
 ###################################################### RUN #######################################################################
 
