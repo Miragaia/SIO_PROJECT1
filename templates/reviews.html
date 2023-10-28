@@ -404,11 +404,10 @@
                 if (data.success) {
                     alert('Avaliação enviada com sucesso!');
                     // Limpar campos do formulário
-                    // document.getElementById('rating').value = '0';
-                    // document.getElementById('review').value = '';
+                     document.getElementById('rating').value = '0';
+                     document.getElementById('review').value = '';
                     // Atualizar a lista de avaliações
-                    // fetchReviews();
-                    window.location.reload();
+                     fetchReviews();
                 } else {
                     alert('Erro ao enviar a avaliação: ' + data.error);
                 }
@@ -417,34 +416,46 @@
                 console.error('Erro na solicitação:', error);
             });
         }
+        const reviewsContainer = document.getElementById('review-list');
+    function renderStars(rating) {
+    const starCount = 5; // Número total de estrelas
+    const filledStars =rating;
+    const emptyStars = starCount - filledStars;
+    let starsHtml = '';
 
-        // // Função para buscar e exibir as avaliações
-        // function fetchReviews() {
-        //     const params = new URLSearchParams(window.location.search);
+    for (let i = 0; i < filledStars; i++) {
+        starsHtml += '<span class="star filled">&#9733;</span>';
+    }
 
-        //     fetch(`http://127.0.0.1:5000/reviews`, {
-        //         method: 'GET',
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const reviewList = document.getElementById('review-list');
-        //         reviewList.innerHTML = '';
+    return starsHtml;
+}
+        // Função para buscar e exibir as avaliações
+        function fetchReviews() {
+            fetch(`http://127.0.0.1:5000/render_reviews`, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const reviewList = document.getElementById('review-list');
+                reviewList.innerHTML = '';
 
-        //         data.reviews.forEach(review => {
-        //             const listItem = document.createElement('li');
-        //             listItem.classList.add('review-item');
-        //             listItem.innerHTML = `
-        //                 <h5>Usuário: ${review.user_id}</h5>
-        //                 <p>Classificação: ${renderStars(review.rating)}</p>
-        //                 <p>Comentário: ${review.comment}</p>
-        //             `;
-        //             reviewList.appendChild(listItem);
-        //         });
-        //     })
-        //     .catch(error => {
-        //         console.error('Erro ao buscar avaliações:', error);
-        //     });
-        // }
+                data.review.forEach(review => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('review-item');
+                    listItem.innerHTML = `
+                    <h6><strong>${review.user_name}</strong> publicado em ${new Date(review.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</h6>
+        <span>${renderStars(review.rating)}</span>
+                        <p>Comentário: ${review.comment}</p>
+                    `;
+                    reviewList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao buscar avaliações:', error);
+            });
+        }
+        fetchReviews();
 
         // Renderização das estrelas
         const stars = document.querySelectorAll('.star.unselected');

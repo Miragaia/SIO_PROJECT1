@@ -69,10 +69,19 @@ CREATE TABLE IF NOT EXISTS product_comments (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+-- Reviews Table
+
+CREATE TABLE reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    rating INTEGER NOT NULL,
+    comment TEXT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
--- Favorites Table
-CREATE TABLE IF NOT EXISTS favorites (
+-- Cart Table
+CREATE TABLE IF NOT EXISTS cart (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,

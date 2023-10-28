@@ -421,41 +421,26 @@ def checkout(user_id):                                                          
         db.session.delete(c)
         db.session.commit()
     
-# @app.route('/reviews')
-# def get_product(product_id):
-#     product = products.query.get(product_id)
-#     # lista de todas as reviews do produto
-#     reviews = product_comments.query.filter_by(product_id=product_id).all()
-#     print(reviews)
-#     category = categories.query.get(product.category_id)
+@app.route('/render_reviews')
+def get_reviews():
+    reviews_items = reviews.query.all()
+    reviews_data = []
+    for r in reviews_items:
+        user = users.query.get(r.user_id)
+        reviews_data.append({
+            'id': r.id,
+            'user_id': 0 if user is None else user.id,
+            'user_name': "Utilizador anónimo" if user is None else user.first_name,
+            'rating': r.rating,
+            'comment': r.comment,
+           
+        })
+    return jsonify(review=reviews_data)
 
-#     product_data = {
-#         'id': product.id,
-#         'name': product.name,
-#         'description': product.description,
-#         'price': str(product.price),
-#         'stock': product.stock,
-#         'category_id': category.id,
-#         'category_name': category.name,
-#         'photo': product.photo,
-#         'reviews': []
-#     }
-
-#     for r in reviews:
-#         user = users.query.get(r.user_id)
-        
-#         product_data['reviews'].append({
-#             'user_id': 0 if user is None else user.id,
-#             'user_name': "Utilizador anónimo" if user is None else user.first_name,
-#             'rating': r.rating,
-#             'comment': r.comment,
-#             'date': r.date
-#         })
-#     return jsonify(product_data)
 
 #Review de produtos
 @app.route('/reviews', methods=['POST'])
-def reviews():
+def review_site():
     data = request.json
     user_id = data.get('user_id')
     rating = data.get('rating')
@@ -542,6 +527,8 @@ class reviews(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text)
+    date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+
 
 ###################################################### RUN #######################################################################
 
