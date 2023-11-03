@@ -541,10 +541,12 @@
         const updatedProductPhoto = cells[0].querySelector('input').value; // No editing for product photo
         const updatedProductDescription = cells[6].querySelector('input').value;// No editing for product description
         const updatedProductPrice = cells[5].querySelector('input').value;// No editing for product price
+
         // Validate quantity
         if (updatedQuantity < 0) {
             updatedQuantity = 0;
         }
+        
         //validate price
         if (updatedProductPrice < 0) {
             alert('Price cannot be negative.');
