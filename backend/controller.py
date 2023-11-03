@@ -3,8 +3,9 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text
-import jwt
+import jwt, sqlite3
 from datetime import datetime, timedelta
+
 
 app = Flask(__name__, template_folder='../templates/')
 app.config['SESSION_USE_COOKIES'] = True
@@ -446,16 +447,23 @@ def review_site():
     rating = data.get('rating')
     comment = data.get('comment')
 
-    if not user_id or not rating or not comment:
+    if not rating or not comment:
         flash('Please enter all the fields', 'error')
         return jsonify({"success": False, "error": "Please enter all the fields"})
-    
-    review = reviews(user_id=user_id,rating=rating, comment=comment)
 
-    db.session.add(review)
-    db.session.commit()
+    try:
+        conn = sqlite3.connect('backend/mydatabase.db')
+        cursor = conn.cursor()
 
-    return jsonify({"success": True})
+        # Usar parâmetros preparados para inserir dados
+        cursor.execute("INSERT INTO reviews (user_id, rating, comment) VALUES (?, ?, ?)", (user_id, rating, comment))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 
 ###################################################### SQL #######################################################################

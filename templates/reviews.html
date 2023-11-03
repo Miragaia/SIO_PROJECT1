@@ -436,16 +436,19 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                
                 const reviewList = document.getElementById('review-list');
                 reviewList.innerHTML = '';
 
                 data.review.forEach(review => {
+                    console.log(review);
+                    console.log(review.comment)
                     const listItem = document.createElement('li');
                     listItem.classList.add('review-item');
                     listItem.innerHTML = `
                     <h6><strong>${review.user_name}</strong> publicado em ${new Date(review.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</h6>
         <span>${renderStars(review.rating)}</span>
+                    
                         <p>Comentário: ${review.comment}</p>
                     `;
                     reviewList.appendChild(listItem);
